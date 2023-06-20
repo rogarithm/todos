@@ -1,5 +1,8 @@
 package kr.rogarithm.todos.todo.dto;
 
+import lombok.Getter;
+
+@Getter
 public class TodoResponse {
 
     /**

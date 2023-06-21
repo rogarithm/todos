@@ -6,6 +6,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDateTime;
+import kr.rogarithm.todos.todo.domain.Todo;
 import kr.rogarithm.todos.todo.dto.TodoResponse;
 import kr.rogarithm.todos.todo.service.TodoService;
 import org.junit.jupiter.api.Test;
@@ -30,10 +32,14 @@ class TodoControllerTest {
     @Test
     public void getTodoByIdSuccess() throws Exception {
         Long todoId = 1L;
-
-        when(todoService.getTodoById(todoId)).thenReturn(
-                new TodoResponse(1L, "물 사기", "집 앞 슈퍼에서 물 사오기", "INCOMPLETE")
-        );
+        Todo todoItem = Todo.builder()
+                         .id(1L)
+                         .name("물 사기")
+                         .description("집 앞 슈퍼에서 물 사오기")
+                         .state("INCOMPLETE")
+                         .createdAt(LocalDateTime.of(2023, 6, 21, 10, 30))
+                         .build();
+        when(todoService.getTodoById(todoId)).thenReturn(TodoResponse.of(todoItem));
 
         this.mockMvc.perform(get("/todos/{todoId}", todoId))
                     .andDo(print())

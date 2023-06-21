@@ -1,8 +1,11 @@
 package kr.rogarithm.todos.todo.dto;
 
+import kr.rogarithm.todos.todo.domain.Todo;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 public class TodoResponse {
 
     /**
@@ -16,10 +19,12 @@ public class TodoResponse {
     private String description;
     private String state;
 
-    public TodoResponse(Long id, String name, String description, String state) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.state = state;
+    public static TodoResponse of(Todo todo) {
+        return TodoResponse.builder()
+                           .id(todo.getId())
+                           .name(todo.getName())
+                           .description(todo.getDescription())
+                           .state(todo.getState())
+                           .build();
     }
 }

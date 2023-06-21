@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDateTime;
 import kr.rogarithm.todos.todo.domain.Todo;
 import kr.rogarithm.todos.todo.dto.TodoResponse;
+import kr.rogarithm.todos.todo.exception.TodoItemNotFoundException;
 import kr.rogarithm.todos.todo.service.TodoService;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -28,6 +29,18 @@ class TodoControllerTest {
 
     @MockBean
     TodoService todoService;
+
+    @Test
+    public void getTodoByIdFailsWhenIdIsInvalid() throws Exception {
+        Long todoId = -1L;
+        when(todoService.getTodoById(todoId)).thenThrow(TodoItemNotFoundException.class);
+
+        this.mockMvc.perform(get("/todos/{todoId}", todoId))
+                    .andDo(print())
+                    .andExpect(status().isNotFound());
+
+        verify(todoService).getTodoById(todoId);
+    }
 
     @Test
     public void getTodoByIdSuccess() throws Exception {

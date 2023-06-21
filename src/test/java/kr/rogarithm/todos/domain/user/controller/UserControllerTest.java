@@ -84,4 +84,33 @@ class UserControllerTest {
                 () -> userService.registerUser(requestWithDuplicateAccount));
         verify(userService).registerUser(requestWithDuplicateAccount);
     }
+
+    @Test
+    public void joinFailWhenNicknameIsDuplicate() throws Exception {
+
+        JoinUserRequest requestWithDuplicateNickname = JoinUserRequest.builder()
+                                                                     .account("sehoongim")
+                                                                     .password("q1w2e3!")
+                                                                     .nickname("duplicated")
+                                                                     .phone("010-1010-1010")
+                                                                     .crn("123-45-67890")
+                                                                     .build();
+
+        String content = objectMapper.writeValueAsString(requestWithDuplicateNickname);
+
+        doThrow(DuplicateAccountException.class)
+                .when(userService)
+                .registerUser(any(JoinUserRequest.class));
+
+        mockMvc.perform(post("/user")
+                       .content(content)
+                       .contentType(MediaType.APPLICATION_JSON)
+                       .accept(MediaType.APPLICATION_JSON))
+               .andDo(print())
+               .andExpect(status().isConflict());
+
+        Assertions.assertThrows(DuplicateAccountException.class,
+                () -> userService.registerUser(requestWithDuplicateNickname));
+        verify(userService).registerUser(requestWithDuplicateNickname);
+    }
 }

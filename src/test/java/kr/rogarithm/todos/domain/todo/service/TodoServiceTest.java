@@ -5,11 +5,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
-import kr.rogarithm.todos.domain.todo.dao.TodoDao;
+import kr.rogarithm.todos.domain.todo.dao.TodoMapper;
 import kr.rogarithm.todos.domain.todo.domain.Todo;
 import kr.rogarithm.todos.domain.todo.dto.TodoResponse;
 import kr.rogarithm.todos.domain.todo.exception.TodoItemNotFoundException;
-import kr.rogarithm.todos.domain.todo.service.TodoService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,7 +22,7 @@ class TodoServiceTest {
     TodoService todoService;
 
     @Mock
-    TodoDao todoDao;
+    TodoMapper todoMapper;
 
     @Test
     public void validIdShouldReturnTodoItem() {
@@ -39,11 +38,11 @@ class TodoServiceTest {
                             .build();
 
         //when
-        when(todoDao.selectTodoById(validId)).thenReturn(todoItem);
+        when(todoMapper.selectTodoById(validId)).thenReturn(todoItem);
         TodoResponse todoResponse = todoService.getTodoById(validId);
 
         //then
-        verify(todoDao).selectTodoById(validId);
+        verify(todoMapper).selectTodoById(validId);
         assertThat(todoResponse.getId()).isEqualTo(validId);
         assertThat(todoResponse).isNotNull();
     }
@@ -55,11 +54,11 @@ class TodoServiceTest {
         Long invalidId = -1L;
 
         //when
-        when(todoDao.selectTodoById(invalidId)).thenReturn(null);
+        when(todoMapper.selectTodoById(invalidId)).thenReturn(null);
 
         //then
         org.junit.jupiter.api.Assertions.assertThrows(TodoItemNotFoundException.class,
                 () -> todoService.getTodoById(invalidId));
-        verify(todoDao).selectTodoById(invalidId);
+        verify(todoMapper).selectTodoById(invalidId);
     }
 }

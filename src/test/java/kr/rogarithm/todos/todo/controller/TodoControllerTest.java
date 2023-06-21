@@ -32,19 +32,19 @@ class TodoControllerTest {
 
     @Test
     public void getTodoByIdFailsWhenIdIsInvalid() throws Exception {
-        Long todoId = -1L;
-        when(todoService.getTodoById(todoId)).thenThrow(TodoItemNotFoundException.class);
+        Long invalidId = -1L;
+        when(todoService.getTodoById(invalidId)).thenThrow(TodoItemNotFoundException.class);
 
-        this.mockMvc.perform(get("/todos/{todoId}", todoId))
+        this.mockMvc.perform(get("/todos/{todoId}", invalidId))
                     .andDo(print())
                     .andExpect(status().isNotFound());
 
-        verify(todoService).getTodoById(todoId);
+        verify(todoService).getTodoById(invalidId);
     }
 
     @Test
-    public void getTodoByIdSuccess() throws Exception {
-        Long todoId = 1L;
+    public void getTodoByIdSuccessWhenIdIsValid() throws Exception {
+        Long validId = 1L;
         Todo todoItem = Todo.builder()
                          .id(1L)
                          .name("물 사기")
@@ -52,12 +52,12 @@ class TodoControllerTest {
                          .state("INCOMPLETE")
                          .createdAt(LocalDateTime.of(2023, 6, 21, 10, 30))
                          .build();
-        when(todoService.getTodoById(todoId)).thenReturn(TodoResponse.of(todoItem));
+        when(todoService.getTodoById(validId)).thenReturn(TodoResponse.of(todoItem));
 
-        this.mockMvc.perform(get("/todos/{todoId}", todoId))
+        this.mockMvc.perform(get("/todos/{todoId}", validId))
                     .andDo(print())
                     .andExpect(status().isOk());
 
-        verify(todoService).getTodoById(todoId);
+        verify(todoService).getTodoById(validId);
     }
 }

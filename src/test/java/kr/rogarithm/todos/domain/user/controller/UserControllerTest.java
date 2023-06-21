@@ -8,11 +8,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.rogarithm.todos.domain.user.domain.User;
 import kr.rogarithm.todos.domain.user.dto.JoinUserRequest;
 import kr.rogarithm.todos.domain.user.exception.DuplicateAccountException;
 import kr.rogarithm.todos.domain.user.exception.InvalidCompanyRegistrationNumberException;
 import kr.rogarithm.todos.domain.user.service.UserService;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,19 +38,28 @@ class UserControllerTest {
     @MockBean
     UserService userService;
 
+    User user;
+
+    @BeforeEach
+    public void setUp() {
+        this.user = User.builder()
+                        .account("sehoongim")
+                        .password("q1w2e3!")
+                        .nickname("shrimp-cracker")
+                        .phone("010-1010-1010")
+                        .crn("123-45-67890")
+                        .build();
+    }
+
     @Test
     public void userJoinSuccess() throws Exception {
 
-        JoinUserRequest request = JoinUserRequest.builder()
-                                                 .account("sehoongim")
-                                                 .password("q1w2e3!")
-                                                 .nickname("shrimp-cracker")
-                                                 .phone("010-1010-1010")
-                                                 .crn("123-45-67890")
-                                                 .build();
+        //given
+        JoinUserRequest request = JoinUserRequest.of(user);
 
         String content = objectMapper.writeValueAsString(request);
 
+        //then
         mockMvc.perform(post("/user")
                        .content(content)
                        .contentType(MediaType.APPLICATION_JSON)
@@ -60,20 +71,23 @@ class UserControllerTest {
     @Test
     public void joinFailWhenAccountIsDuplicate() throws Exception {
 
+        //given
         JoinUserRequest requestWithDuplicateAccount = JoinUserRequest.builder()
                                                                      .account("duplicated")
-                                                                     .password("q1w2e3!")
-                                                                     .nickname("shrimp-cracker")
-                                                                     .phone("010-1010-1010")
-                                                                     .crn("123-45-67890")
+                                                                     .password(user.getPassword())
+                                                                     .nickname(user.getNickname())
+                                                                     .phone(user.getPhone())
+                                                                     .crn(user.getCrn())
                                                                      .build();
 
         String content = objectMapper.writeValueAsString(requestWithDuplicateAccount);
 
+        //when
         doThrow(DuplicateAccountException.class)
                 .when(userService)
                 .registerUser(any(JoinUserRequest.class));
 
+        //then
         mockMvc.perform(post("/user")
                        .content(content)
                        .contentType(MediaType.APPLICATION_JSON)
@@ -89,20 +103,23 @@ class UserControllerTest {
     @Test
     public void joinFailWhenNicknameIsDuplicate() throws Exception {
 
+        //given
         JoinUserRequest requestWithDuplicateNickname = JoinUserRequest.builder()
-                                                                     .account("sehoongim")
-                                                                     .password("q1w2e3!")
-                                                                     .nickname("duplicated")
-                                                                     .phone("010-1010-1010")
-                                                                     .crn("123-45-67890")
-                                                                     .build();
+                                                                      .account(user.getAccount())
+                                                                      .password(user.getPassword())
+                                                                      .nickname("duplicated")
+                                                                      .phone(user.getPhone())
+                                                                      .crn(user.getCrn())
+                                                                      .build();
 
         String content = objectMapper.writeValueAsString(requestWithDuplicateNickname);
 
+        //when
         doThrow(DuplicateAccountException.class)
                 .when(userService)
                 .registerUser(any(JoinUserRequest.class));
 
+        //then
         mockMvc.perform(post("/user")
                        .content(content)
                        .contentType(MediaType.APPLICATION_JSON)
@@ -118,20 +135,23 @@ class UserControllerTest {
     @Test
     public void joinFailWhenCompanyRegistrationNumberIsInvalid() throws Exception {
 
+        //given
         JoinUserRequest requestWithInvalidCrn = JoinUserRequest.builder()
-                                                               .account("sehoongim")
-                                                               .password("q1w2e3!")
-                                                               .nickname("shrimp-cracker")
-                                                               .phone("010-1010-1010")
+                                                               .account(user.getAccount())
+                                                               .password(user.getPassword())
+                                                               .nickname(user.getNickname())
+                                                               .phone(user.getPhone())
                                                                .crn("invalidCrn")
                                                                .build();
 
         String content = objectMapper.writeValueAsString(requestWithInvalidCrn);
 
+        //when
         doThrow(InvalidCompanyRegistrationNumberException.class)
                 .when(userService)
                 .registerUser(any(JoinUserRequest.class));
 
+        //then
         mockMvc.perform(post("/user")
                        .content(content)
                        .contentType(MediaType.APPLICATION_JSON)

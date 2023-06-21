@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.rogarithm.todos.domain.user.dto.JoinUserRequest;
 import kr.rogarithm.todos.domain.user.exception.DuplicateAccountException;
+import kr.rogarithm.todos.domain.user.exception.InvalidCompanyRegistrationNumberException;
 import kr.rogarithm.todos.domain.user.service.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -112,5 +113,34 @@ class UserControllerTest {
         Assertions.assertThrows(DuplicateAccountException.class,
                 () -> userService.registerUser(requestWithDuplicateNickname));
         verify(userService).registerUser(requestWithDuplicateNickname);
+    }
+
+    @Test
+    public void joinFailWhenCompanyRegistrationNumberIsInvalid() throws Exception {
+
+        JoinUserRequest requestWithInvalidCrn = JoinUserRequest.builder()
+                                                               .account("sehoongim")
+                                                               .password("q1w2e3!")
+                                                               .nickname("shrimp-cracker")
+                                                               .phone("010-1010-1010")
+                                                               .crn("invalidCrn")
+                                                               .build();
+
+        String content = objectMapper.writeValueAsString(requestWithInvalidCrn);
+
+        doThrow(InvalidCompanyRegistrationNumberException.class)
+                .when(userService)
+                .registerUser(any(JoinUserRequest.class));
+
+        mockMvc.perform(post("/user")
+                       .content(content)
+                       .contentType(MediaType.APPLICATION_JSON)
+                       .accept(MediaType.APPLICATION_JSON))
+               .andDo(print())
+               .andExpect(status().isConflict());
+
+        Assertions.assertThrows(InvalidCompanyRegistrationNumberException.class,
+                () -> userService.registerUser(requestWithInvalidCrn));
+        verify(userService).registerUser(requestWithInvalidCrn);
     }
 }

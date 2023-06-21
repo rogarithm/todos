@@ -1,9 +1,9 @@
-package kr.rogarithm.todos.todo.service;
+package kr.rogarithm.todos.domain.todo.service;
 
-import kr.rogarithm.todos.todo.dao.TodoDao;
-import kr.rogarithm.todos.todo.domain.Todo;
-import kr.rogarithm.todos.todo.dto.TodoResponse;
-import kr.rogarithm.todos.todo.exception.TodoItemNotFoundException;
+import kr.rogarithm.todos.domain.todo.dto.TodoResponse;
+import kr.rogarithm.todos.domain.todo.dao.TodoDao;
+import kr.rogarithm.todos.domain.todo.domain.Todo;
+import kr.rogarithm.todos.domain.todo.exception.TodoItemNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service

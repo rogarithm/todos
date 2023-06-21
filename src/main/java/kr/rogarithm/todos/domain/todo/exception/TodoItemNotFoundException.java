@@ -1,4 +1,4 @@
-package kr.rogarithm.todos.todo.exception;
+package kr.rogarithm.todos.domain.todo.exception;
 
 public class TodoItemNotFoundException extends RuntimeException {
     public TodoItemNotFoundException(String message) {

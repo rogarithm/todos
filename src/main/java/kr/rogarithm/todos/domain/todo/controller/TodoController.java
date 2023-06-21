@@ -1,7 +1,7 @@
-package kr.rogarithm.todos.todo.controller;
+package kr.rogarithm.todos.domain.todo.controller;
 
-import kr.rogarithm.todos.todo.dto.TodoResponse;
-import kr.rogarithm.todos.todo.service.TodoService;
+import kr.rogarithm.todos.domain.todo.dto.TodoResponse;
+import kr.rogarithm.todos.domain.todo.service.TodoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

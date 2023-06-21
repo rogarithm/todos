@@ -1,4 +1,4 @@
-package kr.rogarithm.todos.todo.domain;
+package kr.rogarithm.todos.domain.todo.domain;
 
 import java.time.LocalDateTime;
 import lombok.Builder;

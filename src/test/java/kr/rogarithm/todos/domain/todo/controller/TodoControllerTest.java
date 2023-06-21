@@ -1,4 +1,4 @@
-package kr.rogarithm.todos.todo.controller;
+package kr.rogarithm.todos.domain.todo.controller;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -7,10 +7,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
-import kr.rogarithm.todos.todo.domain.Todo;
-import kr.rogarithm.todos.todo.dto.TodoResponse;
-import kr.rogarithm.todos.todo.exception.TodoItemNotFoundException;
-import kr.rogarithm.todos.todo.service.TodoService;
+import kr.rogarithm.todos.domain.todo.controller.TodoController;
+import kr.rogarithm.todos.domain.todo.domain.Todo;
+import kr.rogarithm.todos.domain.todo.dto.TodoResponse;
+import kr.rogarithm.todos.domain.todo.exception.TodoItemNotFoundException;
+import kr.rogarithm.todos.domain.todo.service.TodoService;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;

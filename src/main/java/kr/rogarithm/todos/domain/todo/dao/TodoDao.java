@@ -1,6 +1,6 @@
-package kr.rogarithm.todos.todo.dao;
+package kr.rogarithm.todos.domain.todo.dao;
 
-import kr.rogarithm.todos.todo.domain.Todo;
+import kr.rogarithm.todos.domain.todo.domain.Todo;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

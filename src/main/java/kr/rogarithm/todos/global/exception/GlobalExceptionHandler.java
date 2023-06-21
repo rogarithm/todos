@@ -1,6 +1,6 @@
 package kr.rogarithm.todos.global.exception;
 
-import kr.rogarithm.todos.todo.exception.TodoItemNotFoundException;
+import kr.rogarithm.todos.domain.todo.exception.TodoItemNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

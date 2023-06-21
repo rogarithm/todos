@@ -1,6 +1,6 @@
-package kr.rogarithm.todos.todo.dto;
+package kr.rogarithm.todos.domain.todo.dto;
 
-import kr.rogarithm.todos.todo.domain.Todo;
+import kr.rogarithm.todos.domain.todo.domain.Todo;
 import lombok.Builder;
 import lombok.Getter;
 

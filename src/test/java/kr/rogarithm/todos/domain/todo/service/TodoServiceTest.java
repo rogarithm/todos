@@ -1,16 +1,15 @@
-package kr.rogarithm.todos.todo.service;
+package kr.rogarithm.todos.domain.todo.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
-import kr.rogarithm.todos.todo.dao.TodoDao;
-import kr.rogarithm.todos.todo.domain.Todo;
-import kr.rogarithm.todos.todo.dto.TodoResponse;
-import kr.rogarithm.todos.todo.exception.TodoItemNotFoundException;
-import org.assertj.core.api.Assertions;
+import kr.rogarithm.todos.domain.todo.dao.TodoDao;
+import kr.rogarithm.todos.domain.todo.domain.Todo;
+import kr.rogarithm.todos.domain.todo.dto.TodoResponse;
+import kr.rogarithm.todos.domain.todo.exception.TodoItemNotFoundException;
+import kr.rogarithm.todos.domain.todo.service.TodoService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -4,9 +4,7 @@ import kr.rogarithm.todos.todo.domain.Todo;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-public class TodoDao {
+public interface TodoDao {
 
-    public Todo selectTodoById(Long todoId) {
-        return null;
-    }
+    Todo selectTodoById(Long todoId);
 }

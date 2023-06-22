@@ -21,6 +21,13 @@
     WHERE account = #{account}
   </select>
 
+  <select id="selectUserByNickname" parameterType="String" resultType="kr.rogarithm.todos.domain.user.domain.User">
+    SELECT
+    account, password, nickname, phone, crn
+    FROM user
+    WHERE nickname = #{nickname}
+  </select>
+
   <delete id="deleteAllUsers">
     DELETE FROM user
   </delete>

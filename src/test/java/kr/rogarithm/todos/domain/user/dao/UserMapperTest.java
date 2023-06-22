@@ -54,4 +54,11 @@ class UserMapperTest {
         User retrieved = userMapper.selectUserByAccount(validAccount);
         Assertions.assertThat(retrieved).isNotNull();
     }
+
+    @Test
+    public void findUserByNicknameFail() {
+        String invalidNickname = "non-existing";
+        User user = userMapper.selectuserByNickname(invalidNickname);
+        Assertions.assertThat(user).isNull();
+    }
 }

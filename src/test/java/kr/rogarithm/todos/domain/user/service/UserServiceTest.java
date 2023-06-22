@@ -9,6 +9,7 @@ import kr.rogarithm.todos.domain.user.domain.User;
 import kr.rogarithm.todos.domain.user.dto.JoinUserRequest;
 import kr.rogarithm.todos.domain.user.exception.DuplicateAccountException;
 import kr.rogarithm.todos.domain.user.exception.DuplicateNicknameException;
+import kr.rogarithm.todos.domain.user.exception.InvalidCompanyRegistrationNumberException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,9 @@ class UserServiceTest {
 
     @Mock
     UserMapper userMapper;
+
+    @Mock
+    CompanyRegistrationNumberValidator validator;
 
     User user;
 
@@ -88,5 +92,24 @@ class UserServiceTest {
                 () -> userService.registerUser(requestWithDuplicateNickname));
         verify(userMapper).selectUserByAccount(requestWithDuplicateNickname.getAccount());
         verify(userMapper).selectuserByNickname(requestWithDuplicateNickname.getNickname());
+    }
+
+    @Test
+    public void failRegisterUserWhenCrdIsInvalid() {
+
+        //given
+        JoinUserRequest requestWithInvalidCrn = JoinUserRequest.of(user);
+
+        //when
+        when(userMapper.selectUserByAccount(requestWithInvalidCrn.getAccount())).thenReturn(null);
+        when(userMapper.selectuserByNickname(requestWithInvalidCrn.getNickname())).thenReturn(null);
+        when(validator.verifyCompanyRegistrationNumber(requestWithInvalidCrn.getCrn())).thenReturn(false);
+
+        //then
+        Assertions.assertThrows(InvalidCompanyRegistrationNumberException.class,
+                () -> userService.registerUser(requestWithInvalidCrn));
+        verify(userMapper).selectUserByAccount(requestWithInvalidCrn.getAccount());
+        verify(userMapper).selectuserByNickname(requestWithInvalidCrn.getNickname());
+        verify(validator).verifyCompanyRegistrationNumber(requestWithInvalidCrn.getCrn());
     }
 }

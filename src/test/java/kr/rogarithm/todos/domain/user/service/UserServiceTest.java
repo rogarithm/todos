@@ -7,6 +7,8 @@ import static org.mockito.Mockito.when;
 import kr.rogarithm.todos.domain.user.dao.UserMapper;
 import kr.rogarithm.todos.domain.user.domain.User;
 import kr.rogarithm.todos.domain.user.dto.JoinUserRequest;
+import kr.rogarithm.todos.domain.user.exception.DuplicateAccountException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,4 +57,18 @@ class UserServiceTest {
         verify(userMapper).insertUser(request);
     }
 
+    @Test
+    public void exceptionThrownWhenAccountIsDuplicate() {
+
+        //given
+        JoinUserRequest requestWithDuplicateAccount = JoinUserRequest.of(user);
+
+        //when
+        when(userMapper.selectUserByAccount(requestWithDuplicateAccount.getAccount())).thenReturn(user);
+
+        //then
+        Assertions.assertThrows(DuplicateAccountException.class,
+                () -> userService.registerUser(requestWithDuplicateAccount));
+        verify(userMapper).selectUserByAccount(requestWithDuplicateAccount.getAccount());
+    }
 }

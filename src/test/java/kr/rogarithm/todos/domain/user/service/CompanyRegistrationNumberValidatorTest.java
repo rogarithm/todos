@@ -52,4 +52,13 @@ class CompanyRegistrationNumberValidatorTest {
         boolean result = validator.verifyCompanyRegistrationNumber(validCrn);
         Assertions.assertThat(result).isTrue();
     }
+
+    @Test
+    public void verificationFailWhenCrnIsInvalid() {
+
+        String invalidCrn = "123-45-11111";
+        boolean result = validator.verifyCompanyRegistrationNumber(invalidCrn);
+
+        Assertions.assertThat(result).isFalse();
+    }
 }

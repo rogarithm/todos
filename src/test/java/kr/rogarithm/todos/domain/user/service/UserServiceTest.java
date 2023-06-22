@@ -53,14 +53,14 @@ class UserServiceTest {
 
         //when
         when(userMapper.selectUserByAccount(request.getAccount())).thenReturn(null);
-        when(userMapper.selectuserByNickname(request.getNickname())).thenReturn(null);
+        when(userMapper.selectUserByNickname(request.getNickname())).thenReturn(null);
         when(validator.verifyCompanyRegistrationNumber(request.getCrn())).thenReturn(true);
         doNothing().when(userMapper).insertUser(any(User.class));
 
         //then
         userService.registerUser(request);
         verify(userMapper).selectUserByAccount(request.getAccount());
-        verify(userMapper).selectuserByNickname(request.getNickname());
+        verify(userMapper).selectUserByNickname(request.getNickname());
         verify(validator).verifyCompanyRegistrationNumber(request.getCrn());
         verify(userMapper).insertUser(any(User.class));
     }
@@ -88,13 +88,13 @@ class UserServiceTest {
 
         //when
         when(userMapper.selectUserByAccount(requestWithDuplicateNickname.getAccount())).thenReturn(null);
-        when(userMapper.selectuserByNickname(requestWithDuplicateNickname.getNickname())).thenReturn(user);
+        when(userMapper.selectUserByNickname(requestWithDuplicateNickname.getNickname())).thenReturn(user);
 
         //then
         Assertions.assertThrows(DuplicateNicknameException.class,
                 () -> userService.registerUser(requestWithDuplicateNickname));
         verify(userMapper).selectUserByAccount(requestWithDuplicateNickname.getAccount());
-        verify(userMapper).selectuserByNickname(requestWithDuplicateNickname.getNickname());
+        verify(userMapper).selectUserByNickname(requestWithDuplicateNickname.getNickname());
     }
 
     @Test
@@ -105,14 +105,14 @@ class UserServiceTest {
 
         //when
         when(userMapper.selectUserByAccount(requestWithInvalidCrn.getAccount())).thenReturn(null);
-        when(userMapper.selectuserByNickname(requestWithInvalidCrn.getNickname())).thenReturn(null);
+        when(userMapper.selectUserByNickname(requestWithInvalidCrn.getNickname())).thenReturn(null);
         when(validator.verifyCompanyRegistrationNumber(requestWithInvalidCrn.getCrn())).thenReturn(false);
 
         //then
         Assertions.assertThrows(InvalidCompanyRegistrationNumberException.class,
                 () -> userService.registerUser(requestWithInvalidCrn));
         verify(userMapper).selectUserByAccount(requestWithInvalidCrn.getAccount());
-        verify(userMapper).selectuserByNickname(requestWithInvalidCrn.getNickname());
+        verify(userMapper).selectUserByNickname(requestWithInvalidCrn.getNickname());
         verify(validator).verifyCompanyRegistrationNumber(requestWithInvalidCrn.getCrn());
     }
 }

@@ -10,7 +10,7 @@ public interface UserMapper {
 
     User selectUserByAccount(String account);
 
-    User selectuserByNickname(String nickname);
+    User selectUserByNickname(String nickname);
 
     void deleteAllUsers();
 }

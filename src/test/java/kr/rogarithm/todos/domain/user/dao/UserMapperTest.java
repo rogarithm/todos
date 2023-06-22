@@ -58,7 +58,7 @@ class UserMapperTest {
     @Test
     public void findUserByNicknameFail() {
         String invalidNickname = "non-existing";
-        User user = userMapper.selectuserByNickname(invalidNickname);
+        User user = userMapper.selectUserByNickname(invalidNickname);
         Assertions.assertThat(user).isNull();
     }
 }

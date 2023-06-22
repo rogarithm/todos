@@ -61,4 +61,21 @@ class UserMapperTest {
         User user = userMapper.selectUserByNickname(invalidNickname);
         Assertions.assertThat(user).isNull();
     }
+
+    @Test
+    public void findUserByNicknameSuccess() {
+        User user = User.builder()
+                        .account("sehoongim")
+                        .password("q1w2e3!")
+                        .nickname("shrimp-cracker")
+                        .phone("010-1010-1010")
+                        .crn("123-45-67890")
+                        .build();
+
+        userMapper.insertUser(user);
+
+        String validNickname = "shrimp-cracker";
+        User retrieved = userMapper.selectUserByNickname(validNickname);
+        Assertions.assertThat(retrieved).isNotNull();
+    }
 }

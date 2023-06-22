@@ -46,10 +46,11 @@ class CompanyRegistrationNumberValidatorTest {
     }
 
     @Test
-    public void validateCrnWithValidator() {
+    public void verificationSuccessWhenCrnIsValid() {
 
         String validCrn = "123-45-67890";
         boolean result = validator.verifyCompanyRegistrationNumber(validCrn);
+
         Assertions.assertThat(result).isTrue();
     }
 

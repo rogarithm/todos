@@ -41,7 +41,7 @@ class UserMapperTest {
     @Test
     public void findUserByAccountSuccess() {
         User user = User.builder()
-                        .account("sehoonlee")
+                        .account("sehoongim")
                         .password("q1w2e3!")
                         .nickname("shrimp-cracker")
                         .phone("010-1010-1010")
@@ -50,7 +50,7 @@ class UserMapperTest {
 
         userMapper.insertUser(user);
 
-        String validAccount = "sehoonlee";
+        String validAccount = "sehoongim";
         User retrieved = userMapper.selectUserByAccount(validAccount);
         Assertions.assertThat(retrieved).isNotNull();
     }

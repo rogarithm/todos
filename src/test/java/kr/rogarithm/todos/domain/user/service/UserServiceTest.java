@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import kr.rogarithm.todos.domain.user.dao.UserMapper;
 import kr.rogarithm.todos.domain.user.domain.User;
 import kr.rogarithm.todos.domain.user.dto.JoinUserRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,18 +23,24 @@ class UserServiceTest {
     @Mock
     UserMapper userMapper;
 
+    User user;
+
+    @BeforeEach
+    public void setUp() {
+
+        user = User.builder()
+                   .account("sehoongim")
+                   .password("q1w2e3!")
+                   .nickname("shrimp-cracker")
+                   .phone("010-1010-1010")
+                   .crn("123-45-67890")
+                   .build();
+    }
+
     @Test
     public void userIsRegisteredWhenRequestIsValid() {
 
         //given
-        User user = User.builder()
-                        .account("sehoongim")
-                        .password("q1w2e3!")
-                        .nickname("shrimp-cracker")
-                        .phone("010-1010-1010")
-                        .crn("123-45-67890")
-                        .build();
-
         JoinUserRequest request = JoinUserRequest.of(user);
 
         //when

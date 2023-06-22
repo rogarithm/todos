@@ -2,9 +2,18 @@ package kr.rogarithm.todos.domain.user.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class CompanyRegistrationNumberValidatorTest {
+
+    CompanyRegistrationNumberValidator validator;
+
+    @BeforeEach
+    public void setUp() {
+        validator = new CompanyRegistrationNumberValidator();
+    }
 
     @Test
     public void testCrnValidationSteps() {
@@ -36,4 +45,11 @@ class CompanyRegistrationNumberValidatorTest {
         assertThat(stepSix).isEqualTo(1);
     }
 
+    @Test
+    public void validateCrnWithValidator() {
+
+        String validCrn = "123-45-67890";
+        boolean result = validator.verifyCompanyRegistrationNumber(validCrn);
+        Assertions.assertThat(result).isTrue();
+    }
 }

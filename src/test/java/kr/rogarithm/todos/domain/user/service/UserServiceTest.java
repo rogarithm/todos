@@ -8,6 +8,7 @@ import kr.rogarithm.todos.domain.user.dao.UserMapper;
 import kr.rogarithm.todos.domain.user.domain.User;
 import kr.rogarithm.todos.domain.user.dto.JoinUserRequest;
 import kr.rogarithm.todos.domain.user.exception.DuplicateAccountException;
+import kr.rogarithm.todos.domain.user.exception.DuplicateNicknameException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,7 +59,7 @@ class UserServiceTest {
     }
 
     @Test
-    public void exceptionThrownWhenAccountIsDuplicate() {
+    public void failRegisterUserWhenAccountIsDuplicate() {
 
         //given
         JoinUserRequest requestWithDuplicateAccount = JoinUserRequest.of(user);
@@ -70,5 +71,22 @@ class UserServiceTest {
         Assertions.assertThrows(DuplicateAccountException.class,
                 () -> userService.registerUser(requestWithDuplicateAccount));
         verify(userMapper).selectUserByAccount(requestWithDuplicateAccount.getAccount());
+    }
+
+    @Test
+    public void failRegisterUserWhenNicknameIsDuplicate() {
+
+        //given
+        JoinUserRequest requestWithDuplicateNickname = JoinUserRequest.of(user);
+
+        //when
+        when(userMapper.selectUserByAccount(requestWithDuplicateNickname.getAccount())).thenReturn(null);
+        when(userMapper.selectuserByNickname(requestWithDuplicateNickname.getNickname())).thenReturn(user);
+
+        //then
+        Assertions.assertThrows(DuplicateNicknameException.class,
+                () -> userService.registerUser(requestWithDuplicateNickname));
+        verify(userMapper).selectUserByAccount(requestWithDuplicateNickname.getAccount());
+        verify(userMapper).selectuserByNickname(requestWithDuplicateNickname.getNickname());
     }
 }

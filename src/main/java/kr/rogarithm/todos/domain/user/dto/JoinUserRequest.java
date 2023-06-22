@@ -23,4 +23,14 @@ public class JoinUserRequest {
                             .crn(user.getCrn())
                             .build();
   }
+
+    public User toUser() {
+        return User.builder()
+                   .account(this.getAccount())
+                   .password(this.getPassword())
+                   .nickname(this.getNickname())
+                   .phone(this.getPhone())
+                   .crn(this.getCrn())
+                   .build();
+    }
 }

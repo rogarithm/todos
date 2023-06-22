@@ -37,6 +37,6 @@ public class UserService {
             );
         }
 
-        userMapper.insertUser(joinUserRequest);
+        userMapper.insertUser(joinUserRequest.toUser());
     }
 }

@@ -1,5 +1,6 @@
 package kr.rogarithm.todos.domain.user.service;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -53,13 +54,15 @@ class UserServiceTest {
         //when
         when(userMapper.selectUserByAccount(request.getAccount())).thenReturn(null);
         when(userMapper.selectuserByNickname(request.getNickname())).thenReturn(null);
-        doNothing().when(userMapper).insertUser(request);
+        when(validator.verifyCompanyRegistrationNumber(request.getCrn())).thenReturn(true);
+        doNothing().when(userMapper).insertUser(any(User.class));
 
         //then
         userService.registerUser(request);
         verify(userMapper).selectUserByAccount(request.getAccount());
         verify(userMapper).selectuserByNickname(request.getNickname());
-        verify(userMapper).insertUser(request);
+        verify(validator).verifyCompanyRegistrationNumber(request.getCrn());
+        verify(userMapper).insertUser(any(User.class));
     }
 
     @Test

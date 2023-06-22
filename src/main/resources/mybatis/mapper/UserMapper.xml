@@ -14,4 +14,15 @@
     (#{account}, #{password}, #{nickname}, #{phone}, #{crn})
   </insert>
 
+  <select id="selectUserByAccount" parameterType="String" resultType="kr.rogarithm.todos.domain.user.domain.User">
+    SELECT
+    account, password, nickname, phone, crn
+    FROM user
+    WHERE account = #{account}
+  </select>
+
+  <delete id="deleteAllUsers">
+    DELETE FROM user
+  </delete>
+
 </mapper>

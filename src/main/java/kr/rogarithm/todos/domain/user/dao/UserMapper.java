@@ -11,4 +11,6 @@ public interface UserMapper {
     User selectUserByAccount(String account);
 
     User selectuserByNickname(String nickname);
+
+    void deleteAllUsers();
 }

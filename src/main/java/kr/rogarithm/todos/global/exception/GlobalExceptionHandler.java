@@ -28,7 +28,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidCompanyRegistrationNumberException.class)
-    protected ResponseEntity<Void> invalidCompanyRegistrationNumberException(InvalidCompanyRegistrationNumberException e) {
+    protected ResponseEntity<Void> invalidCompanyRegistrationNumberException(
+            InvalidCompanyRegistrationNumberException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 }

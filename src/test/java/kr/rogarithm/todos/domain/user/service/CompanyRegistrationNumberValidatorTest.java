@@ -23,7 +23,7 @@ class CompanyRegistrationNumberValidatorTest {
         String stepOne = validCrn.replaceAll("-", "");
         assertThat(stepOne).isEqualTo("1234567890");
         int stepTwo = 0;
-        for (int i=0; i<9; i++) {
+        for (int i = 0; i < 9; i++) {
             stepTwo += Integer.parseInt(String.valueOf(stepOne.charAt(i)))
                     * Integer.parseInt(String.valueOf(validationKey.charAt(i)));
         }

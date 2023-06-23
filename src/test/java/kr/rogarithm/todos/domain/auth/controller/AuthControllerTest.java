@@ -51,13 +51,13 @@ class AuthControllerTest {
     @Test
     public void refreshTokenShouldBePublishedWhenJoinedUserLogin() throws Exception {
 
+        //given
         LoginRequest request = LoginRequest.builder()
                                            .account("sehoongim")
                                            .password("q1w2e3!")
                                            .build();
 
         Date now = new Date();
-
         String accessToken = Jwts.builder()
                                   .setSubject(request.getAccount())
                                   .setIssuedAt(now)
@@ -66,7 +66,6 @@ class AuthControllerTest {
                                   .setIssuer("higher-x.com")
                                   .setExpiration(new Date(now.getTime() + Duration.ofDays(1).toMillis()))
                                   .compact();
-
         String refreshToken = Jwts.builder()
                               .setSubject(request.getAccount())
                               .setIssuedAt(now)
@@ -81,10 +80,12 @@ class AuthControllerTest {
                                               .refreshToken(refreshToken)
                                               .build();
 
+        //when
         when(authService.loginUser(any(LoginRequest.class))).thenReturn(response);
 
         String content = objectMapper.writeValueAsString(request);
 
+        //then
         MvcResult mvcResult = mockMvc.perform(post("/auth/login")
                                              .content(content)
                                              .contentType(MediaType.APPLICATION_JSON)
@@ -94,12 +95,12 @@ class AuthControllerTest {
                                      .andReturn();
 
         MockHttpServletResponse servletResponse = mvcResult.getResponse();
+
         Cookie refreshTokenInCookie = servletResponse.getCookie("RefreshToken");
-        assertThat(refreshTokenInCookie).isNotNull();
         assertThat(refreshToken).isEqualTo(refreshTokenInCookie.getValue());
 
-        String requestBody = servletResponse.getContentAsString();
-        assertThat(accessToken).isEqualTo(requestBody);
+        String accessTokenInRequestBody = servletResponse.getContentAsString();
+        assertThat(accessToken).isEqualTo(accessTokenInRequestBody);
 
         verify(authService).loginUser(any(LoginRequest.class));
     }
@@ -107,16 +108,19 @@ class AuthControllerTest {
     @Test
     public void loginFailWhenUserDidNotJoin() throws Exception {
 
+        //given
         String accountNotJoined = "sehoongim";
         LoginRequest request = LoginRequest.builder()
                                            .account(accountNotJoined)
                                            .password("q1w2e3!")
                                            .build();
 
+        //when
         when(authService.loginUser(any(LoginRequest.class))).thenThrow(AuthenticationFailedException.class);
 
         String content = objectMapper.writeValueAsString(request);
 
+        //then
         mockMvc.perform(post("/auth/login")
                        .content(content)
                        .contentType(MediaType.APPLICATION_JSON)
@@ -130,16 +134,19 @@ class AuthControllerTest {
     @Test
     public void loginFailWhenPasswordIsNotMatched() throws Exception {
 
+        //given
         String incorrectPassword = "not-matched";
         LoginRequest request = LoginRequest.builder()
                                            .account("sehoongim")
                                            .password(incorrectPassword)
                                            .build();
 
+        //when
         when(authService.loginUser(any(LoginRequest.class))).thenThrow(AuthenticationFailedException.class);
 
         String content = objectMapper.writeValueAsString(request);
 
+        //then
         mockMvc.perform(post("/auth/login")
                        .content(content)
                        .contentType(MediaType.APPLICATION_JSON)

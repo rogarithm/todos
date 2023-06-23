@@ -1,6 +1,7 @@
 package kr.rogarithm.todos.domain.auth.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -14,7 +15,6 @@ import kr.rogarithm.todos.domain.auth.exception.AuthenticationFailedException;
 import kr.rogarithm.todos.domain.user.dao.UserMapper;
 import kr.rogarithm.todos.domain.user.domain.User;
 import kr.rogarithm.todos.global.auth.JwtGenerator;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,14 +36,17 @@ class AuthServiceTest {
     @Test
     public void failLoginWhenAccountIsNotJoinedYet() {
 
+        //given
         LoginRequest request = LoginRequest.builder()
                                            .account("sehoongim")
                                            .password("q1w2e3!")
                                            .build();
 
+        //when
         when(userMapper.selectUserByAccount(request.getAccount())).thenThrow(AuthenticationFailedException.class);
 
-        Assertions.assertThrows(AuthenticationFailedException.class, () -> authService.loginUser(request));
+        //then
+        assertThrows(AuthenticationFailedException.class, () -> authService.loginUser(request));
 
         verify(userMapper).selectUserByAccount(request.getAccount());
     }
@@ -51,6 +54,7 @@ class AuthServiceTest {
     @Test
     public void failLoginWhenPasswordIsNotMatched() {
 
+        //given
         LoginRequest request = LoginRequest.builder()
                                            .account("sehoongim")
                                            .password("not-matched")
@@ -64,9 +68,11 @@ class AuthServiceTest {
                         .crn("123-45-67890")
                         .build();
 
+        //when
         when(userMapper.selectUserByAccount(request.getAccount())).thenReturn(user);
 
-        Assertions.assertThrows(AuthenticationFailedException.class, () -> authService.loginUser(request));
+        //then
+        assertThrows(AuthenticationFailedException.class, () -> authService.loginUser(request));
 
         verify(userMapper).selectUserByAccount(request.getAccount());
     }
@@ -74,6 +80,7 @@ class AuthServiceTest {
     @Test
     public void refreshTokenShouldBePublishedWhenJoinedUserLogin() {
 
+        //given
         LoginRequest request = LoginRequest.builder()
                                            .account("sehoongim")
                                            .password("q1w2e3!")
@@ -97,10 +104,13 @@ class AuthServiceTest {
                               .setExpiration(new Date(now.getTime() + Duration.ofDays(30).toMillis()))
                               .compact();
 
+        //when
         when(userMapper.selectUserByAccount(request.getAccount())).thenReturn(user);
         when(jwtGenerator.generateAccessToken(request)).thenReturn(jwtToken);
 
+        //then
         assertThat(authService.loginUser(request)).isNotNull();
+
         verify(userMapper).selectUserByAccount(request.getAccount());
         verify(jwtGenerator).generateAccessToken(request);
     }

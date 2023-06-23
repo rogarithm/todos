@@ -78,7 +78,7 @@ class AuthServiceTest {
     }
 
     @Test
-    public void refreshTokenShouldBePublishedWhenJoinedUserLogin() {
+    public void tokensShouldBePublishedWhenJoinedUserLogin() {
 
         //given
         LoginRequest request = LoginRequest.builder()
@@ -95,23 +95,33 @@ class AuthServiceTest {
                         .build();
 
         Date now = new Date();
-        String jwtToken = Jwts.builder()
+        String accessToken = Jwts.builder()
                               .setSubject(request.getAccount())
                               .setIssuedAt(now)
                               .signWith(SignatureAlgorithm.HS256, "secret")
                               .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                               .setIssuer("higher-x.com")
-                              .setExpiration(new Date(now.getTime() + Duration.ofDays(30).toMillis()))
+                              .setExpiration(new Date(now.getTime() + Duration.ofDays(1).toMillis()))
                               .compact();
+        String refreshToken = Jwts.builder()
+                                 .setSubject(request.getAccount())
+                                 .setIssuedAt(now)
+                                 .signWith(SignatureAlgorithm.HS256, "secret")
+                                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+                                 .setIssuer("higher-x.com")
+                                 .setExpiration(new Date(now.getTime() + Duration.ofDays(30).toMillis()))
+                                 .compact();
 
         //when
         when(userMapper.selectUserByAccount(request.getAccount())).thenReturn(user);
-        when(jwtGenerator.generateAccessToken(request)).thenReturn(jwtToken);
+        when(jwtGenerator.generateAccessToken(request)).thenReturn(accessToken);
+        when(jwtGenerator.generateRefreshToken(request)).thenReturn(refreshToken);
 
         //then
         assertThat(authService.loginUser(request)).isNotNull();
 
         verify(userMapper).selectUserByAccount(request.getAccount());
         verify(jwtGenerator).generateAccessToken(request);
+        verify(jwtGenerator).generateRefreshToken(request);
     }
 }

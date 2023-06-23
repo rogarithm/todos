@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import java.time.Duration;
 import java.util.Date;
 import javax.servlet.http.Cookie;
@@ -59,21 +60,23 @@ class AuthControllerTest {
 
         Date now = new Date();
         String accessToken = Jwts.builder()
+                                 .setSubject(request.getAccount())
+                                 .setIssuedAt(now)
+                                 .signWith(Keys.hmacShaKeyFor("TodosAppSecretLengthIsMoreThan256".getBytes()),
+                                         SignatureAlgorithm.HS256)
+                                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+                                 .setIssuer("higher-x.com")
+                                 .setExpiration(new Date(now.getTime() + Duration.ofDays(1).toMillis()))
+                                 .compact();
+        String refreshToken = Jwts.builder()
                                   .setSubject(request.getAccount())
                                   .setIssuedAt(now)
-                                  .signWith(SignatureAlgorithm.HS256, "secret")
+                                  .signWith(Keys.hmacShaKeyFor("TodosAppSecretLengthIsMoreThan256".getBytes()),
+                                          SignatureAlgorithm.HS256)
                                   .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                                   .setIssuer("higher-x.com")
-                                  .setExpiration(new Date(now.getTime() + Duration.ofDays(1).toMillis()))
+                                  .setExpiration(new Date(now.getTime() + Duration.ofDays(30).toMillis()))
                                   .compact();
-        String refreshToken = Jwts.builder()
-                              .setSubject(request.getAccount())
-                              .setIssuedAt(now)
-                              .signWith(SignatureAlgorithm.HS256, "secret")
-                              .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
-                              .setIssuer("higher-x.com")
-                              .setExpiration(new Date(now.getTime() + Duration.ofDays(30).toMillis()))
-                              .compact();
 
         LoginResponse response = LoginResponse.builder()
                                               .accessToken(accessToken)

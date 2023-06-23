@@ -3,9 +3,9 @@ package kr.rogarithm.todos.domain.auth.service;
 import kr.rogarithm.todos.domain.auth.dto.LoginRequest;
 import kr.rogarithm.todos.domain.auth.dto.LoginResponse;
 import kr.rogarithm.todos.domain.auth.exception.AuthenticationFailedException;
-import kr.rogarithm.todos.domain.auth.jwt.JwtGenerator;
 import kr.rogarithm.todos.domain.user.dao.UserMapper;
 import kr.rogarithm.todos.domain.user.domain.User;
+import kr.rogarithm.todos.global.auth.JwtGenerator;
 import org.springframework.stereotype.Service;
 
 @Service

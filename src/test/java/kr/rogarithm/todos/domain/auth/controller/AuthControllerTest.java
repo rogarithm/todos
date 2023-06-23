@@ -83,8 +83,9 @@ class AuthControllerTest {
     @Test
     public void loginFailWhenUserDidNotJoin() throws Exception {
 
+        String accountNotJoined = "sehoongim";
         LoginRequest request = LoginRequest.builder()
-                                           .account("sehoongim")
+                                           .account(accountNotJoined)
                                            .password("q1w2e3!")
                                            .build();
 

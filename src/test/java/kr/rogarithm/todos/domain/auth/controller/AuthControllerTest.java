@@ -102,4 +102,26 @@ class AuthControllerTest {
         verify(authService).loginUser(any(LoginRequest.class));
     }
 
+    @Test
+    public void loginFailWhenPasswordIsNotMatched() throws Exception {
+
+        String incorrectPassword = "not-matched";
+        LoginRequest request = LoginRequest.builder()
+                                           .account("sehoongim")
+                                           .password(incorrectPassword)
+                                           .build();
+
+        when(authService.loginUser(any(LoginRequest.class))).thenThrow(AuthenticationFailedException.class);
+
+        String content = objectMapper.writeValueAsString(request);
+
+        mockMvc.perform(post("/auth/login")
+                       .content(content)
+                       .contentType(MediaType.APPLICATION_JSON)
+                       .accept(MediaType.APPLICATION_JSON))
+               .andDo(print())
+               .andExpect(status().isUnauthorized());
+
+        verify(authService).loginUser(any(LoginRequest.class));
+    }
 }

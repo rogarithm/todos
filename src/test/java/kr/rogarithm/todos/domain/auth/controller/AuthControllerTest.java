@@ -1,5 +1,6 @@
 package kr.rogarithm.todos.domain.auth.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -13,6 +14,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.time.Duration;
 import java.util.Date;
+import javax.servlet.http.Cookie;
 import kr.rogarithm.todos.domain.auth.dto.LoginRequest;
 import kr.rogarithm.todos.domain.auth.dto.LoginResponse;
 import kr.rogarithm.todos.domain.auth.exception.AuthenticationFailedException;
@@ -24,7 +26,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 @WebMvcTest(controllers = AuthController.class)
 class AuthControllerTest {
@@ -70,12 +74,19 @@ class AuthControllerTest {
 
         String content = objectMapper.writeValueAsString(request);
 
-        mockMvc.perform(post("/auth/login")
-                       .content(content)
-                       .contentType(MediaType.APPLICATION_JSON)
-                       .accept(MediaType.APPLICATION_JSON))
-               .andDo(print())
-               .andExpect(status().isOk());
+        MvcResult mvcResult = mockMvc.perform(post("/auth/login")
+                                             .content(content)
+                                             .contentType(MediaType.APPLICATION_JSON)
+                                             .accept(MediaType.APPLICATION_JSON))
+                                     .andDo(print())
+                                     .andExpect(status().isOk())
+                                     .andReturn();
+
+        MockHttpServletResponse servletResponse = mvcResult.getResponse();
+        Cookie accessTokenInCookie = servletResponse.getCookie("accessToken");
+
+        assertThat(accessTokenInCookie).isNotNull();
+        assertThat(jwtToken).isEqualTo(accessTokenInCookie.getValue());
 
         verify(authService).loginUser(any(LoginRequest.class));
     }

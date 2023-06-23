@@ -1,8 +1,10 @@
 package kr.rogarithm.todos.domain.auth.controller;
 
+import javax.servlet.http.HttpServletResponse;
 import kr.rogarithm.todos.domain.auth.dto.LoginRequest;
 import kr.rogarithm.todos.domain.auth.dto.LoginResponse;
 import kr.rogarithm.todos.domain.auth.service.AuthService;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,9 +22,17 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> loginUser(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<LoginResponse> loginUser(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
 
-        return ResponseEntity.ok()
-                             .body(authService.loginUser(loginRequest));
+        ResponseCookie cookie = ResponseCookie.from("accessToken", authService.loginUser(loginRequest).getAccessToken())
+                                              .maxAge(7 * 24 * 60 * 60)
+                                              .path("/")
+                                              .secure(true)
+                                              .httpOnly(true)
+                                              .build();
+
+        response.setHeader("Set-Cookie", cookie.toString());
+
+        return ResponseEntity.ok().build();
     }
 }

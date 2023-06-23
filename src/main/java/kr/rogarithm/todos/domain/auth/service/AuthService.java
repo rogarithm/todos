@@ -1,8 +1,8 @@
 package kr.rogarithm.todos.domain.auth.service;
 
 import kr.rogarithm.todos.domain.auth.dto.LoginRequest;
-import kr.rogarithm.todos.domain.auth.dto.LoginResponse;
 import kr.rogarithm.todos.domain.auth.exception.AuthenticationFailedException;
+import kr.rogarithm.todos.domain.auth.model.Token;
 import kr.rogarithm.todos.domain.user.dao.UserMapper;
 import kr.rogarithm.todos.domain.user.domain.User;
 import kr.rogarithm.todos.global.auth.JwtGenerator;
@@ -19,7 +19,7 @@ public class AuthService {
         this.jwtGenerator = jwtGenerator;
     }
 
-    public LoginResponse loginUser(LoginRequest request) {
+    public Token loginUser(LoginRequest request) {
 
         String account = request.getAccount();
         String password = request.getPassword();
@@ -36,9 +36,9 @@ public class AuthService {
         String accessToken = jwtGenerator.generateAccessToken(request);
         String refreshToken = jwtGenerator.generateRefreshToken(request);
 
-        return LoginResponse.builder()
-                            .accessToken(accessToken)
-                            .refreshToken(refreshToken)
-                            .build();
+        return Token.builder()
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
+                    .build();
     }
 }

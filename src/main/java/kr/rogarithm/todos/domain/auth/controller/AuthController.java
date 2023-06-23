@@ -24,10 +24,11 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Token> loginUser(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<LoginResponse> loginUser(@RequestBody LoginRequest loginRequest,
+            HttpServletResponse response) {
 
-        LoginResponse loginResponse = authService.loginUser(loginRequest);
-        ResponseCookie cookie = ResponseCookie.from("RefreshToken", loginResponse.getRefreshToken())
+        Token tokens = authService.loginUser(loginRequest);
+        ResponseCookie cookie = ResponseCookie.from("RefreshToken", tokens.getRefreshToken())
                                               .maxAge(7 * 24 * 60 * 60)
                                               .path("/")
                                               .secure(true)
@@ -37,9 +38,9 @@ public class AuthController {
         response.setHeader("Set-Cookie", cookie.toString());
 
         return ResponseEntity.status(HttpStatus.OK)
-                             .body(Token.builder()
-                                        .accessToken(loginResponse.getAccessToken())
-                                        .build()
+                             .body(LoginResponse.builder()
+                                                .accessToken(tokens.getAccessToken())
+                                                .build()
                              );
     }
 }

@@ -17,8 +17,8 @@ import java.time.Duration;
 import java.util.Date;
 import javax.servlet.http.Cookie;
 import kr.rogarithm.todos.domain.auth.dto.LoginRequest;
-import kr.rogarithm.todos.domain.auth.dto.LoginResponse;
 import kr.rogarithm.todos.domain.auth.exception.AuthenticationFailedException;
+import kr.rogarithm.todos.domain.auth.model.Token;
 import kr.rogarithm.todos.domain.auth.service.AuthService;
 import kr.rogarithm.todos.global.auth.JwtGenerator;
 import org.junit.jupiter.api.Test;
@@ -78,13 +78,13 @@ class AuthControllerTest {
                                   .setExpiration(new Date(now.getTime() + Duration.ofDays(30).toMillis()))
                                   .compact();
 
-        LoginResponse response = LoginResponse.builder()
-                                              .accessToken(accessToken)
-                                              .refreshToken(refreshToken)
-                                              .build();
+        Token tokens = Token.builder()
+                            .accessToken(accessToken)
+                            .refreshToken(refreshToken)
+                            .build();
 
         //when
-        when(authService.loginUser(any(LoginRequest.class))).thenReturn(response);
+        when(authService.loginUser(any(LoginRequest.class))).thenReturn(tokens);
 
         String content = objectMapper.writeValueAsString(request);
 

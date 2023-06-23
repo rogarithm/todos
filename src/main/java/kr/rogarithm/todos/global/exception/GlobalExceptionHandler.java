@@ -1,5 +1,6 @@
 package kr.rogarithm.todos.global.exception;
 
+import kr.rogarithm.todos.domain.auth.exception.AuthenticationFailedException;
 import kr.rogarithm.todos.domain.todo.exception.TodoItemNotFoundException;
 import kr.rogarithm.todos.domain.user.exception.DuplicateAccountException;
 import kr.rogarithm.todos.domain.user.exception.DuplicateNicknameException;
@@ -31,5 +32,10 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<Void> invalidCompanyRegistrationNumberException(
             InvalidCompanyRegistrationNumberException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    }
+
+    @ExceptionHandler(AuthenticationFailedException.class)
+    protected ResponseEntity<Void> authenticationFailedException(AuthenticationFailedException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }

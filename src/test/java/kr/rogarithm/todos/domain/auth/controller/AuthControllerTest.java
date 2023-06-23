@@ -15,6 +15,7 @@ import java.time.Duration;
 import java.util.Date;
 import kr.rogarithm.todos.domain.auth.dto.LoginRequest;
 import kr.rogarithm.todos.domain.auth.dto.LoginResponse;
+import kr.rogarithm.todos.domain.auth.exception.AuthenticationFailedException;
 import kr.rogarithm.todos.domain.auth.jwt.JwtGenerator;
 import kr.rogarithm.todos.domain.auth.service.AuthService;
 import org.junit.jupiter.api.Test;
@@ -75,6 +76,28 @@ class AuthControllerTest {
                        .accept(MediaType.APPLICATION_JSON))
                .andDo(print())
                .andExpect(status().isOk());
+
+        verify(authService).loginUser(any(LoginRequest.class));
+    }
+
+    @Test
+    public void loginFailWhenUserDidNotJoin() throws Exception {
+
+        LoginRequest request = LoginRequest.builder()
+                                           .account("sehoongim")
+                                           .password("q1w2e3!")
+                                           .build();
+
+        when(authService.loginUser(any(LoginRequest.class))).thenThrow(AuthenticationFailedException.class);
+
+        String content = objectMapper.writeValueAsString(request);
+
+        mockMvc.perform(post("/auth/login")
+                       .content(content)
+                       .contentType(MediaType.APPLICATION_JSON)
+                       .accept(MediaType.APPLICATION_JSON))
+               .andDo(print())
+               .andExpect(status().isUnauthorized());
 
         verify(authService).loginUser(any(LoginRequest.class));
     }

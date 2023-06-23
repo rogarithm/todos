@@ -12,28 +12,24 @@ import org.springframework.stereotype.Component;
 public class JwtGenerator {
 
     public String generateAccessToken(LoginRequest request) {
-        Date now = new Date();
-
-        return Jwts.builder()
-                   .setSubject(request.getAccount())
-                   .setIssuedAt(now)
-                   .signWith(SignatureAlgorithm.HS256, "secret")
-                   .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
-                   .setIssuer("higher-x.com")
-                   .setExpiration(new Date(now.getTime() + Duration.ofDays(1).toMillis()))
-                   .compact();
+        return generateTokenWithDay(request.getAccount(), 1);
     }
 
     public String generateRefreshToken(LoginRequest request) {
+        return generateTokenWithDay(request.getAccount(), 30);
+    }
+
+    private String generateTokenWithDay(String account, int days) {
+
         Date now = new Date();
 
         return Jwts.builder()
-                   .setSubject(request.getAccount())
+                   .setSubject(account)
                    .setIssuedAt(now)
                    .signWith(SignatureAlgorithm.HS256, "secret")
                    .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                    .setIssuer("higher-x.com")
-                   .setExpiration(new Date(now.getTime() + Duration.ofDays(30).toMillis()))
+                   .setExpiration(new Date(now.getTime() + Duration.ofDays(days).toMillis()))
                    .compact();
     }
 }

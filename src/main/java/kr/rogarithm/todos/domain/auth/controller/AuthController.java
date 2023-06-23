@@ -3,6 +3,7 @@ package kr.rogarithm.todos.domain.auth.controller;
 import javax.servlet.http.HttpServletResponse;
 import kr.rogarithm.todos.domain.auth.dto.LoginRequest;
 import kr.rogarithm.todos.domain.auth.dto.LoginResponse;
+import kr.rogarithm.todos.domain.auth.model.Token;
 import kr.rogarithm.todos.domain.auth.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -23,7 +24,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<Token> loginUser(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
 
         LoginResponse loginResponse = authService.loginUser(loginRequest);
         ResponseCookie cookie = ResponseCookie.from("RefreshToken", loginResponse.getRefreshToken())
@@ -35,6 +36,10 @@ public class AuthController {
 
         response.setHeader("Set-Cookie", cookie.toString());
 
-        return ResponseEntity.status(HttpStatus.OK).body(loginResponse.getAccessToken());
+        return ResponseEntity.status(HttpStatus.OK)
+                             .body(Token.builder()
+                                        .accessToken(loginResponse.getAccessToken())
+                                        .build()
+                             );
     }
 }

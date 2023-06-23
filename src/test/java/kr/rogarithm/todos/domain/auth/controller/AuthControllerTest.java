@@ -100,10 +100,12 @@ class AuthControllerTest {
         MockHttpServletResponse servletResponse = mvcResult.getResponse();
 
         Cookie refreshTokenInCookie = servletResponse.getCookie("RefreshToken");
-        assertThat(refreshToken).isEqualTo(refreshTokenInCookie.getValue());
+        assertThat(refreshTokenInCookie.getValue()).isEqualTo(refreshToken);
 
-        String accessTokenInRequestBody = servletResponse.getContentAsString();
-        assertThat(accessToken).isEqualTo(accessTokenInRequestBody);
+        String accessTokenInRequestBody = servletResponse.getContentAsString()
+                                                         .replaceAll("\\{|\\}|\"", "")
+                                                         .split(":")[1];
+        assertThat(accessTokenInRequestBody).isEqualTo(accessToken);
 
         verify(authService).loginUser(any(LoginRequest.class));
     }

@@ -98,10 +98,10 @@ class AuthServiceTest {
                               .compact();
 
         when(userMapper.selectUserByAccount(request.getAccount())).thenReturn(user);
-        when(jwtGenerator.getnerateToken(request)).thenReturn(jwtToken);
+        when(jwtGenerator.generateAccessToken(request)).thenReturn(jwtToken);
 
         assertThat(authService.loginUser(request)).isNotNull();
         verify(userMapper).selectUserByAccount(request.getAccount());
-        verify(jwtGenerator).getnerateToken(request);
+        verify(jwtGenerator).generateAccessToken(request);
     }
 }

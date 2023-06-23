@@ -16,7 +16,7 @@ class JwtGeneratorTest {
                                            .password("q1w2e3!")
                                            .build();
 
-        String accessToken = jwtGenerator.getnerateToken(request);
+        String accessToken = jwtGenerator.generateAccessToken(request);
         Assertions.assertThat(accessToken).isNotNull();
     }
 }

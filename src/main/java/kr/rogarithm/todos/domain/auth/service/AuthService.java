@@ -33,10 +33,12 @@ public class AuthService {
             throw new AuthenticationFailedException("잘못된 비밀번호입니다");
         }
 
-        String accessToken = jwtGenerator.getnerateToken(request);
+        String accessToken = jwtGenerator.generateAccessToken(request);
+        String refreshToken = jwtGenerator.generateRefreshToken(request);
 
         return LoginResponse.builder()
                             .accessToken(accessToken)
+                            .refreshToken(refreshToken)
                             .build();
     }
 }

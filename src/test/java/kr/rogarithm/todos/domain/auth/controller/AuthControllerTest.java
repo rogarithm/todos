@@ -57,7 +57,17 @@ class AuthControllerTest {
                                            .build();
 
         Date now = new Date();
-        String jwtToken = Jwts.builder()
+
+        String accessToken = Jwts.builder()
+                                  .setSubject(request.getAccount())
+                                  .setIssuedAt(now)
+                                  .signWith(SignatureAlgorithm.HS256, "secret")
+                                  .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+                                  .setIssuer("higher-x.com")
+                                  .setExpiration(new Date(now.getTime() + Duration.ofDays(1).toMillis()))
+                                  .compact();
+
+        String refreshToken = Jwts.builder()
                               .setSubject(request.getAccount())
                               .setIssuedAt(now)
                               .signWith(SignatureAlgorithm.HS256, "secret")
@@ -67,7 +77,8 @@ class AuthControllerTest {
                               .compact();
 
         LoginResponse response = LoginResponse.builder()
-                                              .accessToken(jwtToken)
+                                              .accessToken(accessToken)
+                                              .refreshToken(refreshToken)
                                               .build();
 
         when(authService.loginUser(any(LoginRequest.class))).thenReturn(response);
@@ -83,10 +94,12 @@ class AuthControllerTest {
                                      .andReturn();
 
         MockHttpServletResponse servletResponse = mvcResult.getResponse();
-        Cookie accessTokenInCookie = servletResponse.getCookie("accessToken");
+        Cookie refreshTokenInCookie = servletResponse.getCookie("RefreshToken");
+        assertThat(refreshTokenInCookie).isNotNull();
+        assertThat(refreshToken).isEqualTo(refreshTokenInCookie.getValue());
 
-        assertThat(accessTokenInCookie).isNotNull();
-        assertThat(jwtToken).isEqualTo(accessTokenInCookie.getValue());
+        String requestBody = servletResponse.getContentAsString();
+        assertThat(accessToken).isEqualTo(requestBody);
 
         verify(authService).loginUser(any(LoginRequest.class));
     }

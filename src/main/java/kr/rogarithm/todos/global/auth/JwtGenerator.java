@@ -11,7 +11,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtGenerator {
 
-    public String getnerateToken(LoginRequest request) {
+    public String generateAccessToken(LoginRequest request) {
+        Date now = new Date();
+
+        return Jwts.builder()
+                   .setSubject(request.getAccount())
+                   .setIssuedAt(now)
+                   .signWith(SignatureAlgorithm.HS256, "secret")
+                   .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+                   .setIssuer("higher-x.com")
+                   .setExpiration(new Date(now.getTime() + Duration.ofDays(1).toMillis()))
+                   .compact();
+    }
+
+    public String generateRefreshToken(LoginRequest request) {
         Date now = new Date();
 
         return Jwts.builder()

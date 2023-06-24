@@ -1,8 +1,10 @@
 package kr.rogarithm.todos.global.auth;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import javax.servlet.http.Cookie;
 import kr.rogarithm.todos.domain.todo.controller.TodoController;
 import kr.rogarithm.todos.domain.todo.service.TodoService;
@@ -31,11 +33,27 @@ class JwtAuthenticationFilterTest {
     JwtAuthenticationManager jwtAuthenticationManager;
 
     @Test
-    public void failWithUnauthorizedCodeWhenTokenIsNull() throws Exception {
+    public void failWithUnauthorizedCodeWhenNoAccessToken() throws Exception {
 
         Long todoId = 1L;
 
         MockHttpServletRequestBuilder requestNoAuthHeader = MockMvcRequestBuilders.get("/todo/{todoId}", todoId)
+                                                                                  .cookie(new Cookie("RefreshToken", "refresh-token"));
+
+        this.mockMvc.perform(requestNoAuthHeader)
+                    .andDo(print())
+                    .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void failWithUnauthorizedCodeWhenRefreshTokenIsExpired() throws Exception {
+
+        Long todoId = 1L;
+
+        when(jwtAuthenticationManager.verifyToken("access-token")).thenThrow(ExpiredJwtException.class);
+
+        MockHttpServletRequestBuilder requestNoAuthHeader = MockMvcRequestBuilders.get("/todo/{todoId}", todoId)
+                                                                                  .header("Authorization", "Bearer "+ "access-token")
                                                                                   .cookie(new Cookie("RefreshToken", "refresh-token"));
 
         this.mockMvc.perform(requestNoAuthHeader)

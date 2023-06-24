@@ -56,16 +56,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             jwtAuthenticationManager.verifyToken(token);
         } catch (ExpiredJwtException e) {
 
-            ObjectMapper mapper = new ObjectMapper();
-
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setCharacterEncoding("UTF-8");
 
-            ResponseStatusException responseStatusException = new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다.");
+            response.getWriter().println("{ \"message\": \"" + "토큰이 만료되었습니다." + "\" }");
 
-            mapper.writeValue(response.getWriter(), responseStatusException);
+            return;
 
         } catch (JwtException e) {
 

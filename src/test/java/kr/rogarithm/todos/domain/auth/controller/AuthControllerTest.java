@@ -67,7 +67,6 @@ class AuthControllerTest {
         request = generator.nextObject(LoginRequest.class);
 
         Date now = new Date();
-
         accessToken = Jwts.builder()
                           .setSubject(request.getAccount())
                           .setIssuedAt(now)
@@ -77,7 +76,6 @@ class AuthControllerTest {
                           .setIssuer("todos.com")
                           .setExpiration(new Date(now.getTime() + Duration.ofDays(1).toMillis()))
                           .compact();
-
         refreshToken = Jwts.builder()
                            .setSubject(request.getAccount())
                            .setIssuedAt(now)
@@ -87,7 +85,6 @@ class AuthControllerTest {
                            .setIssuer("todos.com")
                            .setExpiration(new Date(now.getTime() + Duration.ofDays(30).toMillis()))
                            .compact();
-
         tokens = Token.builder()
                       .accessToken(accessToken)
                       .refreshToken(refreshToken)

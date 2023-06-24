@@ -111,4 +111,25 @@ class VerifyControllerTest {
         assertThrows(VerificationException.class, () -> verifyService.isDuplicatedNickname(nickname));
     }
 
+    @Test
+    public void successVerifyWhenCrnIsValid() throws Exception {
+
+        String crn = "123-45-67890";
+
+        VerifyResponse response = VerifyResponse.builder()
+                                                .verify(true)
+                                                .build();
+
+        when(verifyService.isValidCrn(crn)).thenReturn(response);
+
+        mockMvc.perform(get("/verify/crn")
+                       .queryParam("crn", crn)
+                       .contentType(MediaType.APPLICATION_JSON)
+                       .accept(MediaType.APPLICATION_JSON))
+               .andDo(print())
+               .andExpect(status().isOk());
+
+        verify(verifyService).isValidCrn(crn);
+    }
+
 }

@@ -32,4 +32,11 @@ public class VerifyController {
         VerifyResponse response = verifyService.isDuplicatedNickname(nickname);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @GetMapping("/crn")
+    public ResponseEntity<VerifyResponse> verifyCrn(@RequestParam(name = "crn") String crn) {
+
+        VerifyResponse response = verifyService.isValidCrn(crn);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }

@@ -39,4 +39,8 @@ public class VerifyService {
                              .verify(true)
                              .build();
     }
+
+    public VerifyResponse isValidCrn(String crn) {
+        return null;
+    }
 }

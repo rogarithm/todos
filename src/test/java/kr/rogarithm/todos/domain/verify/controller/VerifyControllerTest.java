@@ -47,8 +47,9 @@ class VerifyControllerTest {
     VerifyResponse responseBodyWhenFail;
 
     @BeforeEach
-    public void setUp() {
+    public void setUpGiven() {
 
+        //given
         account = "sehoongim";
         nickname = "shrimp-cracker";
         crn = "123-45-67890";
@@ -59,8 +60,10 @@ class VerifyControllerTest {
     @Test
     public void successVerifyWhenAccountIsNotDuplicate() throws Exception {
 
+        //when
         when(verifyService.isDuplicatedAccount(account)).thenReturn(responseBodyWhenSuccess);
 
+        //then
         MvcResult mvcResult = mockMvc.perform(get("/verify/account")
                                              .queryParam("account", account)
                                              .contentType(MediaType.APPLICATION_JSON)
@@ -79,10 +82,12 @@ class VerifyControllerTest {
     @Test
     public void failVerifyWhenAccountIsDuplicate() throws Exception {
 
+        //when
         doThrow(VerificationException.class)
                 .when(verifyService)
                 .isDuplicatedAccount(account);
 
+        //then
         MvcResult mvcResult = mockMvc.perform(get("/verify/account")
                                              .queryParam("account", account)
                                              .contentType(MediaType.APPLICATION_JSON)
@@ -101,8 +106,10 @@ class VerifyControllerTest {
     @Test
     public void successVerifyWhenNicknameIsNotDuplicate() throws Exception {
 
+        //when
         when(verifyService.isDuplicatedNickname(nickname)).thenReturn(responseBodyWhenSuccess);
 
+        //then
         MvcResult mvcResult = mockMvc.perform(get("/verify/nickname")
                                              .queryParam("nickname", nickname)
                                              .contentType(MediaType.APPLICATION_JSON)
@@ -121,10 +128,12 @@ class VerifyControllerTest {
     @Test
     public void failVerifyWhenNicknameIsDuplicate() throws Exception {
 
+        //when
         doThrow(VerificationException.class)
                 .when(verifyService)
                 .isDuplicatedNickname(nickname);
 
+        //then
         MvcResult mvcResult = mockMvc.perform(get("/verify/nickname")
                                              .queryParam("nickname", nickname)
                                              .contentType(MediaType.APPLICATION_JSON)
@@ -143,8 +152,10 @@ class VerifyControllerTest {
     @Test
     public void successVerifyWhenCrnIsValid() throws Exception {
 
+        //when
         when(verifyService.isValidCrn(crn)).thenReturn(responseBodyWhenSuccess);
 
+        //then
         MvcResult mvcResult = mockMvc.perform(get("/verify/crn")
                                              .queryParam("crn", crn)
                                              .contentType(MediaType.APPLICATION_JSON)
@@ -163,10 +174,12 @@ class VerifyControllerTest {
     @Test
     public void failVerifyWhenCrnIsInvalid() throws Exception {
 
+        //when
         doThrow(VerificationException.class)
                 .when(verifyService)
                 .isValidCrn(crn);
 
+        //then
         MvcResult mvcResult = mockMvc.perform(get("/verify/crn")
                                              .queryParam("crn", crn)
                                              .contentType(MediaType.APPLICATION_JSON)
@@ -183,6 +196,7 @@ class VerifyControllerTest {
     }
 
     private String extractValueFrom(MockHttpServletResponse keyAndValue) throws UnsupportedEncodingException {
+
         return keyAndValue.getContentAsString()
                           .replaceAll("\\{|\\}|\"", "")
                           .split(":")[1];

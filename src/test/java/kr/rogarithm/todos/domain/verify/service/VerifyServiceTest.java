@@ -5,6 +5,7 @@ import static org.mockito.Mockito.when;
 
 import kr.rogarithm.todos.domain.user.dao.UserMapper;
 import kr.rogarithm.todos.domain.user.domain.User;
+import kr.rogarithm.todos.domain.user.validate.CompanyRegistrationNumberValidator;
 import kr.rogarithm.todos.domain.verify.exception.VerificationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,9 @@ class VerifyServiceTest {
 
     @Mock
     UserMapper userMapper;
+
+    @Mock
+    CompanyRegistrationNumberValidator crnValidator;
 
     @Test
     public void failVerificationWhenAccountIsDuplicated() {
@@ -76,6 +80,26 @@ class VerifyServiceTest {
         when(userMapper.selectUserByNickname(nickname)).thenReturn(null);
 
         assertThat(verifyService.isDuplicatedNickname(nickname).getVerify()).isEqualTo(true);
+    }
+
+    @Test
+    public void failVerificationWhenCrdIsInvalid() {
+
+        String crn = "123-45-67890";
+
+        when(crnValidator.verifyCompanyRegistrationNumber(crn)).thenReturn(false);
+
+        Assertions.assertThrows(VerificationException.class, () -> verifyService.isValidCrn(crn));
+    }
+
+    @Test
+    public void successVerificationWhenCrdIsValid() {
+
+        String crn = "123-45-67890";
+
+        when(crnValidator.verifyCompanyRegistrationNumber(crn)).thenReturn(true);
+
+        assertThat(verifyService.isValidCrn(crn).getVerify()).isEqualTo(true);
     }
 
 }

@@ -1,5 +1,6 @@
 package kr.rogarithm.todos.domain.verify.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -17,7 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 @WebMvcTest(controllers = VerifyController.class)
 class VerifyControllerTest {
@@ -130,6 +133,32 @@ class VerifyControllerTest {
                .andExpect(status().isOk());
 
         verify(verifyService).isValidCrn(crn);
+    }
+
+    @Test
+    public void failVerifyWhenCrnIsInvalid() throws Exception {
+
+        String crn = "123-45-67890";
+
+        doThrow(VerificationException.class)
+                .when(verifyService)
+                .isValidCrn(crn);
+
+        MvcResult mvcResult = mockMvc.perform(get("/verify/crn")
+                                        .queryParam("crn", crn)
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .accept(MediaType.APPLICATION_JSON))
+                                .andDo(print())
+                                .andExpect(status().isConflict())
+                                .andReturn();
+
+        MockHttpServletResponse servletResponse = mvcResult.getResponse();
+        String valueOfResponseBody = servletResponse.getContentAsString()
+                                                    .replaceAll("\\{|\\}|\"", "")
+                                                    .split(":")[1];
+
+        assertThat(valueOfResponseBody).isEqualTo("false");
+        assertThrows(VerificationException.class, () -> verifyService.isValidCrn(crn));
     }
 
 }

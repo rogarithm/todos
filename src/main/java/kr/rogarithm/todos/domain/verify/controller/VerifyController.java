@@ -26,4 +26,10 @@ public class VerifyController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @GetMapping("/nickname")
+    public ResponseEntity<VerifyResponse> verifyNickname(@RequestParam(name = "nickname") String nickname) {
+
+        verifyService.isDuplicatedNickname(nickname);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }

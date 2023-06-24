@@ -26,4 +26,8 @@ public class VerifyService {
                              .verify(true)
                              .build();
     }
+
+    public void isDuplicatedNickname(String nickname) {
+
+    }
 }

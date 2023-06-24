@@ -71,6 +71,23 @@ class VerifyControllerTest {
         assertThrows(VerificationException.class, () -> verifyService.isDuplicatedAccount(account));
     }
 
+    @Test
+    public void failVerifyWhenNicknameIsDuplicate() throws Exception {
+
+        String nickname = "shrimp-cracker";
+
+        doThrow(VerificationException.class)
+                .when(verifyService)
+                .isDuplicatedNickname(nickname);
+
+        mockMvc.perform(get("/verify/nickname")
+                       .queryParam("nickname", nickname)
+                       .contentType(MediaType.APPLICATION_JSON)
+                       .accept(MediaType.APPLICATION_JSON))
+               .andDo(print())
+               .andExpect(status().isConflict());
+
+        assertThrows(VerificationException.class, () -> verifyService.isDuplicatedNickname(nickname));
     }
 
 }

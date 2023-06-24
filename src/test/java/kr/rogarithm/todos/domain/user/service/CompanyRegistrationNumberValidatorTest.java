@@ -2,6 +2,7 @@ package kr.rogarithm.todos.domain.user.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import kr.rogarithm.todos.domain.user.validate.CompanyRegistrationNumberValidator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

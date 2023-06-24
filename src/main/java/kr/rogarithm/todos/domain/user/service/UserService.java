@@ -5,6 +5,7 @@ import kr.rogarithm.todos.domain.user.dto.JoinUserRequest;
 import kr.rogarithm.todos.domain.user.exception.DuplicateAccountException;
 import kr.rogarithm.todos.domain.user.exception.DuplicateNicknameException;
 import kr.rogarithm.todos.domain.user.exception.InvalidCompanyRegistrationNumberException;
+import kr.rogarithm.todos.domain.user.validate.CompanyRegistrationNumberValidator;
 import org.springframework.stereotype.Service;
 
 @Service

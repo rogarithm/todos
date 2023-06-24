@@ -8,8 +8,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import kr.rogarithm.todos.domain.user.exception.DuplicateAccountException;
 import kr.rogarithm.todos.domain.verify.dto.VerifyResponse;
+import kr.rogarithm.todos.domain.verify.exception.VerificationException;
 import kr.rogarithm.todos.domain.verify.service.VerifyService;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -57,7 +57,7 @@ class VerifyControllerTest {
 
         String account = "sehoongim";
 
-        doThrow(DuplicateAccountException.class)
+        doThrow(VerificationException.class)
                 .when(verifyService)
                 .isDuplicated(account);
 
@@ -68,7 +68,7 @@ class VerifyControllerTest {
                .andDo(print())
                .andExpect(status().isConflict());
 
-        assertThrows(DuplicateAccountException.class, () -> verifyService.isDuplicated(account));
+        assertThrows(VerificationException.class, () -> verifyService.isDuplicated(account));
     }
 
 }

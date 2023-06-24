@@ -1,9 +1,11 @@
 package kr.rogarithm.todos.domain.verify.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import kr.rogarithm.todos.domain.user.dao.UserMapper;
-import kr.rogarithm.todos.domain.user.exception.DuplicateAccountException;
+import kr.rogarithm.todos.domain.user.domain.User;
+import kr.rogarithm.todos.domain.verify.exception.VerificationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,9 +27,27 @@ class VerifyServiceTest {
 
         String account = "sehoongim";
 
-        when(userMapper.selectUserByAccount(account)).thenThrow(DuplicateAccountException.class);
+        User user = User.builder()
+                   .account("sehoongim")
+                   .password("q1w2e3!")
+                   .nickname("shrimp-cracker")
+                   .phone("010-1010-1010")
+                   .crn("123-45-67890")
+                   .build();
 
-        Assertions.assertThrows(DuplicateAccountException.class, () -> verifyService.isDuplicated(account));
+        when(userMapper.selectUserByAccount(account)).thenReturn(user);
+
+        Assertions.assertThrows(VerificationException.class, () -> verifyService.isDuplicated(account));
+    }
+
+    @Test
+    public void successVerificationWhenAccountIsNotDuplicated() {
+
+        String account = "sehoongim";
+
+        when(userMapper.selectUserByAccount(account)).thenReturn(null);
+
+        assertThat(verifyService.isDuplicated(account).getVerify()).isEqualTo(true);
     }
 
 }

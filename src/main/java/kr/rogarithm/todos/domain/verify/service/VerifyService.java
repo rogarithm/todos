@@ -2,6 +2,7 @@ package kr.rogarithm.todos.domain.verify.service;
 
 import kr.rogarithm.todos.domain.user.dao.UserMapper;
 import kr.rogarithm.todos.domain.verify.dto.VerifyResponse;
+import kr.rogarithm.todos.domain.verify.exception.VerificationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,7 +15,15 @@ public class VerifyService {
     }
 
     public VerifyResponse isDuplicated(String account) {
-        userMapper.selectUserByAccount(account);
-        return null;
+
+        if (userMapper.selectUserByAccount(account) != null) {
+            throw new VerificationException(
+                    "입력한 계정(" + account + ")으로 등록된 회원이 이미 존재합니다."
+            );
+        }
+
+        return VerifyResponse.builder()
+                             .verify(true)
+                             .build();
     }
 }

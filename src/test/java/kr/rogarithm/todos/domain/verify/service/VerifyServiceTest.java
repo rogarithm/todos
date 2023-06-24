@@ -1,13 +1,14 @@
 package kr.rogarithm.todos.domain.verify.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import kr.rogarithm.todos.domain.user.dao.UserMapper;
 import kr.rogarithm.todos.domain.user.domain.User;
 import kr.rogarithm.todos.domain.user.validate.CompanyRegistrationNumberValidator;
 import kr.rogarithm.todos.domain.verify.exception.VerificationException;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,28 +27,39 @@ class VerifyServiceTest {
     @Mock
     CompanyRegistrationNumberValidator crnValidator;
 
+    String account;
+
+    String crn;
+
+    String nickname;
+
+    User user;
+
+    @BeforeEach
+    public void setUpGiven() {
+
+        crn = "123-45-67890";
+        account = "sehoongim";
+        nickname = "shrimp-cracker";
+        user = User.builder()
+                        .account("sehoongim")
+                        .password("q1w2e3!")
+                        .nickname("shrimp-cracker")
+                        .phone("010-1010-1010")
+                        .crn("123-45-67890")
+                        .build();
+    }
+
     @Test
     public void failVerificationWhenAccountIsDuplicated() {
 
-        String account = "sehoongim";
-
-        User user = User.builder()
-                   .account("sehoongim")
-                   .password("q1w2e3!")
-                   .nickname("shrimp-cracker")
-                   .phone("010-1010-1010")
-                   .crn("123-45-67890")
-                   .build();
-
         when(userMapper.selectUserByAccount(account)).thenReturn(user);
 
-        Assertions.assertThrows(VerificationException.class, () -> verifyService.isDuplicatedAccount(account));
+        assertThrows(VerificationException.class, () -> verifyService.isDuplicatedAccount(account));
     }
 
     @Test
     public void successVerificationWhenAccountIsNotDuplicated() {
-
-        String account = "sehoongim";
 
         when(userMapper.selectUserByAccount(account)).thenReturn(null);
 
@@ -57,25 +69,13 @@ class VerifyServiceTest {
     @Test
     public void failVerificationWhenNicknameIsDuplicated() {
 
-        String nickname = "shrimp-cracker";
-
-        User user = User.builder()
-                        .account("sehoongim")
-                        .password("q1w2e3!")
-                        .nickname("shrimp-cracker")
-                        .phone("010-1010-1010")
-                        .crn("123-45-67890")
-                        .build();
-
         when(userMapper.selectUserByNickname(nickname)).thenReturn(user);
 
-        Assertions.assertThrows(VerificationException.class, () -> verifyService.isDuplicatedNickname(nickname));
+        assertThrows(VerificationException.class, () -> verifyService.isDuplicatedNickname(nickname));
     }
 
     @Test
     public void successVerificationWhenNicknameIsNotDuplicated() {
-
-        String nickname = "shrimp-cracker";
 
         when(userMapper.selectUserByNickname(nickname)).thenReturn(null);
 
@@ -85,17 +85,13 @@ class VerifyServiceTest {
     @Test
     public void failVerificationWhenCrdIsInvalid() {
 
-        String crn = "123-45-67890";
-
         when(crnValidator.verifyCompanyRegistrationNumber(crn)).thenReturn(false);
 
-        Assertions.assertThrows(VerificationException.class, () -> verifyService.isValidCrn(crn));
+        assertThrows(VerificationException.class, () -> verifyService.isValidCrn(crn));
     }
 
     @Test
     public void successVerificationWhenCrdIsValid() {
-
-        String crn = "123-45-67890";
 
         when(crnValidator.verifyCompanyRegistrationNumber(crn)).thenReturn(true);
 

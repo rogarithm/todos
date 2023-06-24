@@ -50,4 +50,32 @@ class VerifyServiceTest {
         assertThat(verifyService.isDuplicatedAccount(account).getVerify()).isEqualTo(true);
     }
 
+    @Test
+    public void failVerificationWhenNicknameIsDuplicated() {
+
+        String nickname = "shrimp-cracker";
+
+        User user = User.builder()
+                        .account("sehoongim")
+                        .password("q1w2e3!")
+                        .nickname("shrimp-cracker")
+                        .phone("010-1010-1010")
+                        .crn("123-45-67890")
+                        .build();
+
+        when(userMapper.selectUserByNickname(nickname)).thenReturn(user);
+
+        Assertions.assertThrows(VerificationException.class, () -> verifyService.isDuplicatedNickname(nickname));
+    }
+
+    @Test
+    public void successVerificationWhenNicknameIsNotDuplicated() {
+
+        String nickname = "shrimp-cracker";
+
+        when(userMapper.selectUserByNickname(nickname)).thenReturn(null);
+
+        assertThat(verifyService.isDuplicatedNickname(nickname).getVerify()).isEqualTo(true);
+    }
+
 }

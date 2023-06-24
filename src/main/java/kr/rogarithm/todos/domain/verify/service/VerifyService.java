@@ -28,6 +28,15 @@ public class VerifyService {
     }
 
     public VerifyResponse isDuplicatedNickname(String nickname) {
-        return null;
+
+        if (userMapper.selectUserByNickname(nickname) != null) {
+            throw new VerificationException(
+                    "입력한 닉네임(" + nickname + ")으로 등록된 회원이 이미 존재합니다."
+            );
+        }
+
+        return VerifyResponse.builder()
+                             .verify(true)
+                             .build();
     }
 }

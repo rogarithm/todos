@@ -22,9 +22,7 @@ public class VerifyService {
             );
         }
 
-        return VerifyResponse.builder()
-                             .verify(true)
-                             .build();
+        return new VerifyResponse(true);
     }
 
     public VerifyResponse isDuplicatedNickname(String nickname) {
@@ -35,9 +33,7 @@ public class VerifyService {
             );
         }
 
-        return VerifyResponse.builder()
-                             .verify(true)
-                             .build();
+        return new VerifyResponse(true);
     }
 
     public VerifyResponse isValidCrn(String crn) {

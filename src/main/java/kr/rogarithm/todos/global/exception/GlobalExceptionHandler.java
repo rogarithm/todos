@@ -44,9 +44,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(VerificationException.class)
     protected ResponseEntity<VerifyResponse> verificationException(VerificationException e) {
 
-        VerifyResponse response = VerifyResponse.builder()
-                                                .verify(false)
-                                                .build();
+        VerifyResponse response = new VerifyResponse(false);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 }

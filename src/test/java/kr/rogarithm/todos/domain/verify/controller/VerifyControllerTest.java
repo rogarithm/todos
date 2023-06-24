@@ -45,13 +45,20 @@ class VerifyControllerTest {
 
         when(verifyService.isDuplicatedAccount(account)).thenReturn(response);
 
-        mockMvc.perform(get("/verify/account")
-                       .queryParam("account", account)
-                       .contentType(MediaType.APPLICATION_JSON)
-                       .accept(MediaType.APPLICATION_JSON))
-               .andDo(print())
-               .andExpect(status().isOk());
+        MvcResult mvcResult = mockMvc.perform(get("/verify/account")
+                                             .queryParam("account", account)
+                                             .contentType(MediaType.APPLICATION_JSON)
+                                             .accept(MediaType.APPLICATION_JSON))
+                                     .andDo(print())
+                                     .andExpect(status().isOk())
+                                     .andReturn();
 
+        MockHttpServletResponse servletResponse = mvcResult.getResponse();
+        String valueOfResponseBody = servletResponse.getContentAsString()
+                                                    .replaceAll("\\{|\\}|\"", "")
+                                                    .split(":")[1];
+
+        assertThat(valueOfResponseBody).isEqualTo(response.getVerify().toString());
         verify(verifyService).isDuplicatedAccount(account);
     }
 
@@ -60,17 +67,28 @@ class VerifyControllerTest {
 
         String account = "sehoongim";
 
+        VerifyResponse response = VerifyResponse.builder()
+                                                .verify(false)
+                                                .build();
+
         doThrow(VerificationException.class)
                 .when(verifyService)
                 .isDuplicatedAccount(account);
 
-        mockMvc.perform(get("/verify/account")
-                       .queryParam("account", account)
-                       .contentType(MediaType.APPLICATION_JSON)
-                       .accept(MediaType.APPLICATION_JSON))
-               .andDo(print())
-               .andExpect(status().isConflict());
+        MvcResult mvcResult = mockMvc.perform(get("/verify/account")
+                                             .queryParam("account", account)
+                                             .contentType(MediaType.APPLICATION_JSON)
+                                             .accept(MediaType.APPLICATION_JSON))
+                                     .andDo(print())
+                                     .andExpect(status().isConflict())
+                                     .andReturn();
 
+        MockHttpServletResponse servletResponse = mvcResult.getResponse();
+        String valueOfResponseBody = servletResponse.getContentAsString()
+                                                    .replaceAll("\\{|\\}|\"", "")
+                                                    .split(":")[1];
+
+        assertThat(valueOfResponseBody).isEqualTo(response.getVerify().toString());
         assertThrows(VerificationException.class, () -> verifyService.isDuplicatedAccount(account));
     }
 
@@ -85,13 +103,20 @@ class VerifyControllerTest {
 
         when(verifyService.isDuplicatedNickname(nickname)).thenReturn(response);
 
-        mockMvc.perform(get("/verify/nickname")
-                .queryParam("nickname", nickname)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk());
+        MvcResult mvcResult = mockMvc.perform(get("/verify/nickname")
+                                             .queryParam("nickname", nickname)
+                                             .contentType(MediaType.APPLICATION_JSON)
+                                             .accept(MediaType.APPLICATION_JSON))
+                                     .andDo(print())
+                                     .andExpect(status().isOk())
+                                     .andReturn();
 
+        MockHttpServletResponse servletResponse = mvcResult.getResponse();
+        String valueOfResponseBody = servletResponse.getContentAsString()
+                                                    .replaceAll("\\{|\\}|\"", "")
+                                                    .split(":")[1];
+
+        assertThat(valueOfResponseBody).isEqualTo(response.getVerify().toString());
         verify(verifyService).isDuplicatedNickname(nickname);
     }
 
@@ -100,17 +125,28 @@ class VerifyControllerTest {
 
         String nickname = "shrimp-cracker";
 
+        VerifyResponse response = VerifyResponse.builder()
+                                                .verify(false)
+                                                .build();
+
         doThrow(VerificationException.class)
                 .when(verifyService)
                 .isDuplicatedNickname(nickname);
 
-        mockMvc.perform(get("/verify/nickname")
-                       .queryParam("nickname", nickname)
-                       .contentType(MediaType.APPLICATION_JSON)
-                       .accept(MediaType.APPLICATION_JSON))
-               .andDo(print())
-               .andExpect(status().isConflict());
+        MvcResult mvcResult = mockMvc.perform(get("/verify/nickname")
+                                             .queryParam("nickname", nickname)
+                                             .contentType(MediaType.APPLICATION_JSON)
+                                             .accept(MediaType.APPLICATION_JSON))
+                                     .andDo(print())
+                                     .andExpect(status().isConflict())
+                                     .andReturn();
 
+        MockHttpServletResponse servletResponse = mvcResult.getResponse();
+        String valueOfResponseBody = servletResponse.getContentAsString()
+                                                    .replaceAll("\\{|\\}|\"", "")
+                                                    .split(":")[1];
+
+        assertThat(valueOfResponseBody).isEqualTo(response.getVerify().toString());
         assertThrows(VerificationException.class, () -> verifyService.isDuplicatedNickname(nickname));
     }
 
@@ -125,13 +161,20 @@ class VerifyControllerTest {
 
         when(verifyService.isValidCrn(crn)).thenReturn(response);
 
-        mockMvc.perform(get("/verify/crn")
-                       .queryParam("crn", crn)
-                       .contentType(MediaType.APPLICATION_JSON)
-                       .accept(MediaType.APPLICATION_JSON))
-               .andDo(print())
-               .andExpect(status().isOk());
+        MvcResult mvcResult = mockMvc.perform(get("/verify/crn")
+                                             .queryParam("crn", crn)
+                                             .contentType(MediaType.APPLICATION_JSON)
+                                             .accept(MediaType.APPLICATION_JSON))
+                                     .andDo(print())
+                                     .andExpect(status().isOk())
+                                     .andReturn();
 
+        MockHttpServletResponse servletResponse = mvcResult.getResponse();
+        String valueOfResponseBody = servletResponse.getContentAsString()
+                                                    .replaceAll("\\{|\\}|\"", "")
+                                                    .split(":")[1];
+
+        assertThat(valueOfResponseBody).isEqualTo(response.getVerify().toString());
         verify(verifyService).isValidCrn(crn);
     }
 

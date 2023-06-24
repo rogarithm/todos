@@ -92,7 +92,34 @@ class AuthControllerTest {
     }
 
     @Test
-    public void refreshTokenShouldBePublishedWhenJoinedUserLogin() throws Exception {
+    public void accessTokenShouldBePublishedWhenJoinedUserLogin() throws Exception {
+
+        //when
+        when(authService.loginUser(any(LoginRequest.class))).thenReturn(tokens);
+
+        String content = objectMapper.writeValueAsString(validRequest);
+
+        //then
+        MvcResult mvcResult = mockMvc.perform(post("/auth/login")
+                                             .content(content)
+                                             .contentType(MediaType.APPLICATION_JSON)
+                                             .accept(MediaType.APPLICATION_JSON))
+                                     .andDo(print())
+                                     .andExpect(status().isOk())
+                                     .andReturn();
+
+        MockHttpServletResponse servletResponse = mvcResult.getResponse();
+
+        String accessTokenInRequestBody = servletResponse.getContentAsString()
+                                                         .replaceAll("\\{|\\}|\"", "")
+                                                         .split(":")[1];
+        assertThat(accessTokenInRequestBody).isEqualTo(accessToken);
+
+        verify(authService).loginUser(any(LoginRequest.class));
+    }
+
+    @Test
+    public void refreshTokenShouldBeStoredInCookieWhenJoinedUserLogin() throws Exception {
 
         //when
         when(authService.loginUser(any(LoginRequest.class))).thenReturn(tokens);
@@ -112,11 +139,6 @@ class AuthControllerTest {
 
         Cookie refreshTokenInCookie = servletResponse.getCookie("RefreshToken");
         assertThat(refreshTokenInCookie.getValue()).isEqualTo(refreshToken);
-
-        String accessTokenInRequestBody = servletResponse.getContentAsString()
-                                                         .replaceAll("\\{|\\}|\"", "")
-                                                         .split(":")[1];
-        assertThat(accessTokenInRequestBody).isEqualTo(accessToken);
 
         verify(authService).loginUser(any(LoginRequest.class));
     }

@@ -57,6 +57,13 @@ class VerifyControllerTest {
         responseBodyWhenFail = new VerifyResponse(false);
     }
 
+    private String extractValueFrom(MockHttpServletResponse keyAndValue) throws UnsupportedEncodingException {
+
+        return keyAndValue.getContentAsString()
+                          .replaceAll("\\{|\\}|\"", "")
+                          .split(":")[1];
+    }
+
     @Test
     public void successVerifyWhenAccountIsNotDuplicate() throws Exception {
 
@@ -193,12 +200,5 @@ class VerifyControllerTest {
 
         assertThat(valueOfResponseBody).isEqualTo(responseBodyWhenFail.getVerify().toString());
         assertThrows(VerificationException.class, () -> verifyService.isValidCrn(crn));
-    }
-
-    private String extractValueFrom(MockHttpServletResponse keyAndValue) throws UnsupportedEncodingException {
-
-        return keyAndValue.getContentAsString()
-                          .replaceAll("\\{|\\}|\"", "")
-                          .split(":")[1];
     }
 }

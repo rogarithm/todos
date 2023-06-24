@@ -55,39 +55,47 @@ class AuthControllerTest {
 
     LoginRequest request;
 
+    String accessToken;
+
+    String refreshToken;
+
+    Token tokens;
+
     @BeforeEach
     public void setUp() {
         generator = new EasyRandom();
         request = generator.nextObject(LoginRequest.class);
+
+        Date now = new Date();
+
+        accessToken = Jwts.builder()
+                          .setSubject(request.getAccount())
+                          .setIssuedAt(now)
+                          .signWith(Keys.hmacShaKeyFor("TodosAppSecretLengthIsMoreThan256".getBytes()),
+                                  SignatureAlgorithm.HS256)
+                          .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+                          .setIssuer("todos.com")
+                          .setExpiration(new Date(now.getTime() + Duration.ofDays(1).toMillis()))
+                          .compact();
+
+        refreshToken = Jwts.builder()
+                           .setSubject(request.getAccount())
+                           .setIssuedAt(now)
+                           .signWith(Keys.hmacShaKeyFor("TodosAppSecretLengthIsMoreThan256".getBytes()),
+                                   SignatureAlgorithm.HS256)
+                           .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+                           .setIssuer("todos.com")
+                           .setExpiration(new Date(now.getTime() + Duration.ofDays(30).toMillis()))
+                           .compact();
+
+        tokens = Token.builder()
+                      .accessToken(accessToken)
+                      .refreshToken(refreshToken)
+                      .build();
     }
 
     @Test
     public void refreshTokenShouldBePublishedWhenJoinedUserLogin() throws Exception {
-
-        //given
-        Date now = new Date();
-        String accessToken = Jwts.builder()
-                                 .setSubject(request.getAccount())
-                                 .setIssuedAt(now)
-                                 .signWith(Keys.hmacShaKeyFor("TodosAppSecretLengthIsMoreThan256".getBytes()),
-                                         SignatureAlgorithm.HS256)
-                                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
-                                 .setIssuer("higher-x.com")
-                                 .setExpiration(new Date(now.getTime() + Duration.ofDays(1).toMillis()))
-                                 .compact();
-        String refreshToken = Jwts.builder()
-                                  .setSubject(request.getAccount())
-                                  .setIssuedAt(now)
-                                  .signWith(Keys.hmacShaKeyFor("TodosAppSecretLengthIsMoreThan256".getBytes()),
-                                          SignatureAlgorithm.HS256)
-                                  .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
-                                  .setIssuer("higher-x.com")
-                                  .setExpiration(new Date(now.getTime() + Duration.ofDays(30).toMillis()))
-                                  .compact();
-        Token tokens = Token.builder()
-                            .accessToken(accessToken)
-                            .refreshToken(refreshToken)
-                            .build();
 
         //when
         when(authService.loginUser(any(LoginRequest.class))).thenReturn(tokens);

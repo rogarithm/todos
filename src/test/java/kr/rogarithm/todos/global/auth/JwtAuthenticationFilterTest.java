@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import javax.servlet.http.Cookie;
 import kr.rogarithm.todos.domain.todo.controller.TodoController;
 import kr.rogarithm.todos.domain.todo.service.TodoService;
@@ -54,6 +55,22 @@ class JwtAuthenticationFilterTest {
 
         MockHttpServletRequestBuilder requestNoAuthHeader = MockMvcRequestBuilders.get("/todo/{todoId}", todoId)
                                                                                   .header("Authorization", "Bearer "+ "access-token")
+                                                                                  .cookie(new Cookie("RefreshToken", "refresh-token"));
+
+        this.mockMvc.perform(requestNoAuthHeader)
+                    .andDo(print())
+                    .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void failWithUnauthorizedCodeWhenTokenIsWrongFormat() throws Exception {
+
+        Long todoId = 1L;
+
+        when(jwtAuthenticationManager.verifyToken("access-token-in-wrong-format")).thenThrow(JwtException.class);
+
+        MockHttpServletRequestBuilder requestNoAuthHeader = MockMvcRequestBuilders.get("/todo/{todoId}", todoId)
+                                                                                  .header("Authorization", "Bearer "+ "access-token-in-wrong-format")
                                                                                   .cookie(new Cookie("RefreshToken", "refresh-token"));
 
         this.mockMvc.perform(requestNoAuthHeader)

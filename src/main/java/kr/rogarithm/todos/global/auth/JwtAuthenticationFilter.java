@@ -1,6 +1,5 @@
 package kr.rogarithm.todos.global.auth;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import java.io.IOException;
@@ -13,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.server.ResponseStatusException;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -66,17 +64,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         } catch (JwtException e) {
 
-            ObjectMapper mapper = new ObjectMapper();
-
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setCharacterEncoding("UTF-8");
 
-            ResponseStatusException responseStatusException = new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED, "잘못된 토큰 형식입니다.");
+            response.getWriter().println("{ \"message\": \"" + "잘못된 토큰 형식입니다." + "\" }");
 
-            mapper.writeValue(response.getWriter(), responseStatusException);
-
+            return;
         }
 
         filterChain.doFilter(request, response);

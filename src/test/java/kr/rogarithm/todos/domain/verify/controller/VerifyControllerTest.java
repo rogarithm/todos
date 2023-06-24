@@ -43,7 +43,7 @@ class VerifyControllerTest {
         when(verifyService.isDuplicated(account)).thenReturn(response);
 
         mockMvc.perform(get("/verify/account")
-                       .param("account", account)
+                       .queryParam("account", account)
                        .contentType(MediaType.APPLICATION_JSON)
                        .accept(MediaType.APPLICATION_JSON))
                .andDo(print())
@@ -62,7 +62,7 @@ class VerifyControllerTest {
                 .isDuplicated(account);
 
         mockMvc.perform(get("/verify/account")
-                       .param("account", account)
+                       .queryParam("account", account)
                        .contentType(MediaType.APPLICATION_JSON)
                        .accept(MediaType.APPLICATION_JSON))
                .andDo(print())

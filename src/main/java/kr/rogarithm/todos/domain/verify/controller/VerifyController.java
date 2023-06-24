@@ -20,7 +20,7 @@ public class VerifyController {
     }
 
     @GetMapping("/account")
-    public ResponseEntity<VerifyResponse> verify(@RequestParam String account) {
+    public ResponseEntity<VerifyResponse> verify(@RequestParam(name = "account") String account) {
 
         VerifyResponse response = verifyService.isDuplicated(account);
         return ResponseEntity.status(HttpStatus.OK).body(response);

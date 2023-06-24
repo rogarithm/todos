@@ -36,6 +36,7 @@ public class AuthController {
                                               .build();
 
         response.setHeader("Set-Cookie", cookie.toString());
+        response.setHeader("Authorization", "Bearer " + tokens.getAccessToken());
 
         return ResponseEntity.status(HttpStatus.OK)
                              .body(LoginResponse.builder()

@@ -32,7 +32,7 @@ class VerifyControllerTest {
     VerifyService verifyService;
 
     @Test
-    public void verifySucceddWhenAccountIsNotDuplicate() throws Exception {
+    public void successVerifyWhenAccountIsNotDuplicate() throws Exception {
 
         String account = "sehoongim";
 
@@ -53,7 +53,7 @@ class VerifyControllerTest {
     }
 
     @Test
-    public void verifyFailWhenAccountIsDuplicate() throws Exception {
+    public void failVerifyWhenAccountIsDuplicate() throws Exception {
 
         String account = "sehoongim";
 

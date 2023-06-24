@@ -20,6 +20,7 @@ import kr.rogarithm.todos.domain.auth.dto.LoginRequest;
 import kr.rogarithm.todos.domain.auth.exception.AuthenticationFailedException;
 import kr.rogarithm.todos.domain.auth.model.Token;
 import kr.rogarithm.todos.domain.auth.service.AuthService;
+import kr.rogarithm.todos.global.auth.JwtAuthenticationFilter;
 import kr.rogarithm.todos.global.auth.JwtGenerator;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,12 +29,20 @@ import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-@WebMvcTest(controllers = AuthController.class)
+@WebMvcTest(
+        controllers = AuthController.class,
+        excludeFilters =
+        @ComponentScan.Filter(
+                type = FilterType.ASSIGNABLE_TYPE,
+                classes = JwtAuthenticationFilter.class)
+)
 class AuthControllerTest {
 
     @Autowired
@@ -97,7 +106,7 @@ class AuthControllerTest {
         //when
         when(authService.loginUser(any(LoginRequest.class))).thenReturn(tokens);
 
-        String content = objectMapper.writeValueAsString(validRequest);
+        String content = objectMapper.writeValueAsString(request);
 
         //then
         MvcResult mvcResult = mockMvc.perform(post("/auth/login")
@@ -124,7 +133,7 @@ class AuthControllerTest {
         //when
         when(authService.loginUser(any(LoginRequest.class))).thenReturn(tokens);
 
-        String content = objectMapper.writeValueAsString(validRequest);
+        String content = objectMapper.writeValueAsString(request);
 
         //then
         MvcResult mvcResult = mockMvc.perform(post("/auth/login")

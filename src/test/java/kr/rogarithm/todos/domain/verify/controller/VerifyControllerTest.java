@@ -72,6 +72,27 @@ class VerifyControllerTest {
     }
 
     @Test
+    public void successVerifyWhenNicknameIsNotDuplicate() throws Exception {
+
+        String nickname = "shrimp-cracker";
+
+        VerifyResponse response = VerifyResponse.builder()
+                .verify(true)
+                .build();
+
+        when(verifyService.isDuplicatedNickname(nickname)).thenReturn(response);
+
+        mockMvc.perform(get("/verify/nickname")
+                .queryParam("nickname", nickname)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        verify(verifyService).isDuplicatedNickname(nickname);
+    }
+
+    @Test
     public void failVerifyWhenNicknameIsDuplicate() throws Exception {
 
         String nickname = "shrimp-cracker";

@@ -37,7 +37,7 @@ class VerifyServiceTest {
 
         when(userMapper.selectUserByAccount(account)).thenReturn(user);
 
-        Assertions.assertThrows(VerificationException.class, () -> verifyService.isDuplicated(account));
+        Assertions.assertThrows(VerificationException.class, () -> verifyService.isDuplicatedAccount(account));
     }
 
     @Test
@@ -47,7 +47,7 @@ class VerifyServiceTest {
 
         when(userMapper.selectUserByAccount(account)).thenReturn(null);
 
-        assertThat(verifyService.isDuplicated(account).getVerify()).isEqualTo(true);
+        assertThat(verifyService.isDuplicatedAccount(account).getVerify()).isEqualTo(true);
     }
 
 }

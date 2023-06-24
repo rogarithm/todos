@@ -14,7 +14,7 @@ public class VerifyService {
         this.userMapper = userMapper;
     }
 
-    public VerifyResponse isDuplicated(String account) {
+    public VerifyResponse isDuplicatedAccount(String account) {
 
         if (userMapper.selectUserByAccount(account) != null) {
             throw new VerificationException(

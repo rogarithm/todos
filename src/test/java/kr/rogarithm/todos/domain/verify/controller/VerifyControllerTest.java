@@ -40,7 +40,7 @@ class VerifyControllerTest {
                                                 .verify(true)
                                                 .build();
 
-        when(verifyService.isDuplicated(account)).thenReturn(response);
+        when(verifyService.isDuplicatedAccount(account)).thenReturn(response);
 
         mockMvc.perform(get("/verify/account")
                        .queryParam("account", account)
@@ -49,7 +49,7 @@ class VerifyControllerTest {
                .andDo(print())
                .andExpect(status().isOk());
 
-        verify(verifyService).isDuplicated(account);
+        verify(verifyService).isDuplicatedAccount(account);
     }
 
     @Test
@@ -59,7 +59,7 @@ class VerifyControllerTest {
 
         doThrow(VerificationException.class)
                 .when(verifyService)
-                .isDuplicated(account);
+                .isDuplicatedAccount(account);
 
         mockMvc.perform(get("/verify/account")
                        .queryParam("account", account)
@@ -68,7 +68,9 @@ class VerifyControllerTest {
                .andDo(print())
                .andExpect(status().isConflict());
 
-        assertThrows(VerificationException.class, () -> verifyService.isDuplicated(account));
+        assertThrows(VerificationException.class, () -> verifyService.isDuplicatedAccount(account));
+    }
+
     }
 
 }

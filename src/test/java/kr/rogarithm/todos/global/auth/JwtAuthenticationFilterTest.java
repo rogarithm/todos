@@ -2,7 +2,6 @@ package kr.rogarithm.todos.global.auth;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -157,13 +156,19 @@ class JwtAuthenticationFilterTest {
 
         String content = objectMapper.writeValueAsString(validRequest);
 
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/auth/login")
+                                                                      .header("Authorization",
+                                                                              "Bearer " + "access-token")
+                                                                      .cookie(new Cookie("RefreshToken",
+                                                                              "refresh-token"));
+
         when(authService.loginUser(any(LoginRequest.class))).thenReturn(tokens);
 
-        this.mockMvc.perform(post("/auth/login")
-                                             .content(content)
-                                             .contentType(MediaType.APPLICATION_JSON)
-                                             .accept(MediaType.APPLICATION_JSON))
-                                     .andDo(print())
-                                     .andExpect(status().isOk());
+        this.mockMvc.perform(request
+                            .content(content)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andDo(print())
+                    .andExpect(status().isOk());
     }
 }

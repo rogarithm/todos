@@ -20,8 +20,8 @@ dependencies {
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.2'
 	implementation 'com.h2database:h2'
 
+	testImplementation 'io.rest-assured:rest-assured'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'

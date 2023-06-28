@@ -1,3 +1,6 @@
+DROP TABLE  if exists user;
+DROP TABLE  if exists todo;
+
 CREATE TABLE `user` (
   `id` bigint PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `account` varchar(255) NOT NULL,

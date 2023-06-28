@@ -1,6 +1,7 @@
 package kr.rogarithm.todos.domain.todo.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -57,7 +58,7 @@ class TodoServiceTest {
         when(todoMapper.selectTodoById(invalidId)).thenReturn(null);
 
         //then
-        org.junit.jupiter.api.Assertions.assertThrows(TodoItemNotFoundException.class,
+        assertThrows(TodoItemNotFoundException.class,
                 () -> todoService.getTodoById(invalidId));
         verify(todoMapper).selectTodoById(invalidId);
     }

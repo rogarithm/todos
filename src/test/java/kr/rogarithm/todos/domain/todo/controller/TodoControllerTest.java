@@ -32,6 +32,7 @@ class TodoControllerTest {
 
     @Test
     public void getTodoByIdFailsWhenIdIsInvalid() throws Exception {
+
         Long invalidId = -1L;
         when(todoService.getTodoById(invalidId)).thenThrow(TodoItemNotFoundException.class);
 
@@ -44,14 +45,15 @@ class TodoControllerTest {
 
     @Test
     public void getTodoByIdSuccessWhenIdIsValid() throws Exception {
+
         Long validId = 1L;
         Todo todoItem = Todo.builder()
-                         .id(1L)
-                         .name("물 사기")
-                         .description("집 앞 슈퍼에서 물 사오기")
-                         .state("INCOMPLETE")
-                         .createdAt(LocalDateTime.of(2023, 6, 21, 10, 30))
-                         .build();
+                            .id(1L)
+                            .name("물 사기")
+                            .description("집 앞 슈퍼에서 물 사오기")
+                            .state("INCOMPLETE")
+                            .createdAt(LocalDateTime.of(2023, 6, 21, 10, 30))
+                            .build();
         when(todoService.getTodoById(validId)).thenReturn(TodoResponse.of(todoItem));
 
         this.mockMvc.perform(get("/todo/{todoId}", validId))

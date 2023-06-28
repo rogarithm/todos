@@ -20,6 +20,7 @@ class UserMapperTest {
 
     @Test
     public void insertUserSuccess() {
+
         User user = User.builder()
                         .account("sehoongim")
                         .password("q1w2e3!")
@@ -33,6 +34,7 @@ class UserMapperTest {
 
     @Test
     public void findUserByAccountFail() {
+
         String invalidAccount = "non-existing";
         User user = userMapper.selectUserByAccount(invalidAccount);
         Assertions.assertThat(user).isNull();
@@ -40,6 +42,7 @@ class UserMapperTest {
 
     @Test
     public void findUserByAccountSuccess() {
+
         User user = User.builder()
                         .account("sehoongim")
                         .password("q1w2e3!")
@@ -57,6 +60,7 @@ class UserMapperTest {
 
     @Test
     public void findUserByNicknameFail() {
+
         String invalidNickname = "non-existing";
         User user = userMapper.selectUserByNickname(invalidNickname);
         Assertions.assertThat(user).isNull();
@@ -64,6 +68,7 @@ class UserMapperTest {
 
     @Test
     public void findUserByNicknameSuccess() {
+
         User user = User.builder()
                         .account("sehoongim")
                         .password("q1w2e3!")

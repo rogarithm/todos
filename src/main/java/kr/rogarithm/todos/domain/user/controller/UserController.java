@@ -21,6 +21,7 @@ public class UserController {
 
     @PostMapping("")
     public ResponseEntity<Void> joinUser(@RequestBody JoinUserRequest joinUserRequest) {
+
         userService.registerUser(joinUserRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

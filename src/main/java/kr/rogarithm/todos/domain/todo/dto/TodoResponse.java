@@ -14,6 +14,7 @@ public class TodoResponse {
     private String state;
 
     public static TodoResponse of(Todo todo) {
+
         return TodoResponse.builder()
                            .id(todo.getId())
                            .name(todo.getName())

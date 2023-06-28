@@ -32,6 +32,7 @@ class TodoControllerTest {
 
     @Test
     public void getTodoByIdFailsWhenIdIsInvalid() throws Exception {
+
         Long invalidId = -1L;
         when(todoService.getTodoById(invalidId)).thenThrow(TodoItemNotFoundException.class);
 
@@ -44,6 +45,7 @@ class TodoControllerTest {
 
     @Test
     public void getTodoByIdSuccessWhenIdIsValid() throws Exception {
+
         Long validId = 1L;
         Todo todoItem = Todo.builder()
                             .id(1L)

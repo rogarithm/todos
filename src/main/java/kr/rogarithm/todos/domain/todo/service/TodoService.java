@@ -1,8 +1,8 @@
 package kr.rogarithm.todos.domain.todo.service;
 
-import kr.rogarithm.todos.domain.todo.dto.TodoResponse;
 import kr.rogarithm.todos.domain.todo.dao.TodoMapper;
 import kr.rogarithm.todos.domain.todo.domain.Todo;
+import kr.rogarithm.todos.domain.todo.dto.TodoResponse;
 import kr.rogarithm.todos.domain.todo.exception.TodoItemNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +16,7 @@ public class TodoService {
     }
 
     public TodoResponse getTodoById(Long todoId) {
+
         Todo todo = todoMapper.selectTodoById(todoId);
 
         if (todo == null) {

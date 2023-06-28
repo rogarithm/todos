@@ -14,6 +14,7 @@ class TodoMapperTest {
 
     @Test
     public void selectTodoByInvalidId() {
+
         Long invalidId = -1L;
         Todo todo = todoMapper.selectTodoById(invalidId);
         Assertions.assertThat(todo).isNull();
@@ -21,6 +22,7 @@ class TodoMapperTest {
 
     @Test
     public void selectTodoByValidId() {
+
         Long validId = 1L;
         Todo todo = todoMapper.selectTodoById(validId);
         Assertions.assertThat(todo.getId()).isEqualTo(validId);

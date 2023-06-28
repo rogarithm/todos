@@ -15,6 +15,7 @@ public class JoinUserRequest {
     private String crn;
 
     public static JoinUserRequest of(User user) {
+
         return JoinUserRequest.builder()
                               .account(user.getAccount())
                               .password(user.getPassword())
@@ -25,6 +26,7 @@ public class JoinUserRequest {
     }
 
     public User toUser() {
+
         return User.builder()
                    .account(this.getAccount())
                    .password(this.getPassword())

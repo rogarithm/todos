@@ -17,6 +17,7 @@ class CompanyRegistrationNumberValidatorTest {
 
     @Test
     public void testCrnValidationSteps() {
+
         String validationKey = "137137135";
         String validCrn = "123-45-67890";
 

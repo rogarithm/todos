@@ -5,6 +5,8 @@ import kr.rogarithm.todos.domain.todo.exception.TodoItemNotFoundException;
 import kr.rogarithm.todos.domain.user.exception.DuplicateAccountException;
 import kr.rogarithm.todos.domain.user.exception.DuplicateNicknameException;
 import kr.rogarithm.todos.domain.user.exception.InvalidCompanyRegistrationNumberException;
+import kr.rogarithm.todos.domain.verify.dto.VerifyResponse;
+import kr.rogarithm.todos.domain.verify.exception.VerificationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -37,5 +39,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthenticationFailedException.class)
     protected ResponseEntity<Void> authenticationFailedException(AuthenticationFailedException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @ExceptionHandler(VerificationException.class)
+    protected ResponseEntity<VerifyResponse> verificationException(VerificationException e) {
+
+        VerifyResponse response = new VerifyResponse(false);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 }

@@ -1,4 +1,4 @@
-package kr.rogarithm.todos.domain.user.service;
+package kr.rogarithm.todos.domain.user.validate;
 
 import java.util.Arrays;
 import java.util.List;

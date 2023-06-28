@@ -19,14 +19,18 @@ public class UserEnd2EndTest {
     int port;
 
     User validUser;
-    
+
     User userDuplicateAccount;
+
+    User userDuplicateNickname;
+
+    User userInvalidCrn;
 
     @BeforeEach
     public void setUp() {
 
         validUser = User.builder()
-                        .account("adamlevy")
+                        .account("adam")
                         .password("g1it0r!")
                         .nickname("guitar-guru")
                         .phone("010-1010-1010")
@@ -34,12 +38,28 @@ public class UserEnd2EndTest {
                         .build();
 
         userDuplicateAccount = User.builder()
-                                   .account("sehoongim")
+                                   .account("sehoon")
                                    .password("q1w2e3!")
                                    .nickname("shrimp-cracker")
                                    .phone("010-1010-1010")
                                    .crn("123-45-67890")
                                    .build();
+
+        userDuplicateNickname = User.builder()
+                                   .account("kate")
+                                   .password("q1w2e3!")
+                                   .nickname("shrimp-cracker")
+                                   .phone("010-1010-1010")
+                                   .crn("123-45-67890")
+                                   .build();
+
+        userInvalidCrn = User.builder()
+                             .account("bill")
+                             .password("q1w2e3!")
+                             .nickname("kill-bill")
+                             .phone("010-1010-1010")
+                             .crn("123-45-11111")
+                             .build();
     }
 
     @Test
@@ -53,11 +73,31 @@ public class UserEnd2EndTest {
     }
 
     @Test
-    public void joinUserFail() throws Exception {
+    public void joinUserFailWhenDuplicateAccount() throws Exception {
 
         RestAssured.port = port;
 
         ExtractableResponse<Response> response = joinUser(JoinUserRequest.of(userDuplicateAccount));
+
+        assertThat(response.statusCode()).isEqualTo(409);
+    }
+
+    @Test
+    public void joinUserFailWhenDuplicateNickname() throws Exception {
+
+        RestAssured.port = port;
+
+        ExtractableResponse<Response> response = joinUser(JoinUserRequest.of(userDuplicateNickname));
+
+        assertThat(response.statusCode()).isEqualTo(409);
+    }
+
+    @Test
+    public void joinUserFailWhenInvalidCrn() throws Exception {
+
+        RestAssured.port = port;
+
+        ExtractableResponse<Response> response = joinUser(JoinUserRequest.of(userInvalidCrn));
 
         assertThat(response.statusCode()).isEqualTo(409);
     }

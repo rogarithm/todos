@@ -1,6 +1,7 @@
 package kr.rogarithm.todos.domain.todo.dao;
 
 import kr.rogarithm.todos.domain.todo.domain.Todo;
+import kr.rogarithm.todos.domain.todo.dto.AddTodoRequest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,5 +27,13 @@ class TodoMapperTest {
         Long validId = 1L;
         Todo todo = todoMapper.selectTodoById(validId);
         Assertions.assertThat(todo.getId()).isEqualTo(validId);
+    }
+
+    @Test
+    public void insertTodo() {
+
+        Todo todo = new AddTodoRequest("물 사기", "집 앞 슈퍼에서 물 사오기").toTodo();
+        int affected = todoMapper.insertTodo(todo);
+        Assertions.assertThat(affected).isEqualTo(1);
     }
 }

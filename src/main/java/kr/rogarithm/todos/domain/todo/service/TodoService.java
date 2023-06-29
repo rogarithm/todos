@@ -2,6 +2,7 @@ package kr.rogarithm.todos.domain.todo.service;
 
 import kr.rogarithm.todos.domain.todo.dao.TodoMapper;
 import kr.rogarithm.todos.domain.todo.domain.Todo;
+import kr.rogarithm.todos.domain.todo.dto.AddTodoRequest;
 import kr.rogarithm.todos.domain.todo.dto.TodoResponse;
 import kr.rogarithm.todos.domain.todo.exception.TodoItemNotFoundException;
 import org.springframework.stereotype.Service;
@@ -24,5 +25,9 @@ public class TodoService {
         }
 
         return TodoResponse.of(todo);
+    }
+
+    public void saveTodo(AddTodoRequest addTodoRequest) {
+        todoMapper.insertTodo(addTodoRequest.toTodo());
     }
 }

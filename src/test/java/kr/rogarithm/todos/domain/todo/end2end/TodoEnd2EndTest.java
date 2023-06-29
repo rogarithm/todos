@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import kr.rogarithm.todos.domain.todo.dto.AddTodoRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -14,6 +15,29 @@ public class TodoEnd2EndTest {
 
     @LocalServerPort
     int port;
+
+    @Test
+    public void addTodoItemSuccess() {
+
+        RestAssured.port = port;
+
+        AddTodoRequest addTodoRequest = new AddTodoRequest("심부름", "물 사러 갔다오기");
+
+        ExtractableResponse<Response> response = addTodo(addTodoRequest);
+    }
+
+    private ExtractableResponse<Response> addTodo(AddTodoRequest addTodoRequest) {
+
+        return RestAssured
+                .given().log().all()
+                .contentType("application/json")
+                .body(addTodoRequest)
+                .when()
+                .post("/todo")
+                .then()
+                .log().all()
+                .extract();
+    }
 
     @Test
     public void getTodoItemByIdSuccess() throws Exception {

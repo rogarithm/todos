@@ -32,7 +32,12 @@ class TodoMapperTest {
     @Test
     public void insertTodo() {
 
-        Todo todo = new AddTodoRequest("물 사기", "집 앞 슈퍼에서 물 사오기").toTodo();
+        Todo todo = AddTodoRequest.builder()
+                                  .name("물 사기")
+                                  .description("집 앞 슈퍼에서 물 사오기")
+                                  .build()
+                                  .toTodo();
+
         int affected = todoMapper.insertTodo(todo);
         Assertions.assertThat(affected).isEqualTo(1);
     }

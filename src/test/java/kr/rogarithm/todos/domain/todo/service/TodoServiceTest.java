@@ -69,8 +69,10 @@ class TodoServiceTest {
     public void saveTodoSuccess() {
 
         //given
-        AddTodoRequest addTodoRequest = new AddTodoRequest("물 사기", "집 앞 슈퍼에서 물 사오기");
-
+        AddTodoRequest addTodoRequest = AddTodoRequest.builder()
+                                                      .name("물 사기")
+                                                      .description("집 앞 슈퍼에서 물 사오기")
+                                                      .build();
         //when
         when(todoMapper.insertTodo(any(Todo.class))).thenReturn(1);
 

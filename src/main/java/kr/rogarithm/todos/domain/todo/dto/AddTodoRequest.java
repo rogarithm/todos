@@ -1,21 +1,17 @@
 package kr.rogarithm.todos.domain.todo.dto;
 
 import kr.rogarithm.todos.domain.todo.domain.Todo;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 public class AddTodoRequest {
 
     private static final String DEFAULT_TODO_STATE = "INCOMPLETE";
 
     private String name;
     private String description;
-
-    public AddTodoRequest(String name, String description) {
-
-        this.name = name;
-        this.description = description;
-    }
 
     public Todo toTodo() {
 

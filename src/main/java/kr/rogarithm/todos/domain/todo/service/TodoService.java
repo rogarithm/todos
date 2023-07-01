@@ -13,6 +13,7 @@ public class TodoService {
     private final TodoMapper todoMapper;
 
     public TodoService(TodoMapper todoMapper) {
+
         this.todoMapper = todoMapper;
     }
 
@@ -28,6 +29,7 @@ public class TodoService {
     }
 
     public void saveTodo(AddTodoRequest addTodoRequest) {
+
         todoMapper.insertTodo(addTodoRequest.toTodo());
     }
 }

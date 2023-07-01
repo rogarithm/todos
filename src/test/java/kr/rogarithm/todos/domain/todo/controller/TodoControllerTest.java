@@ -90,4 +90,25 @@ class TodoControllerTest {
                .andDo(print())
                .andExpect(status().isOk());
     }
+
+    @Test
+    public void addTodoFailWhenRequestIsInvalid() throws Exception {
+
+        AddTodoRequest addTodoRequest = AddTodoRequest.builder()
+                                                      .name("")
+                                                      .description("집 앞 슈퍼에서 물 사오기")
+                                                      .build();
+
+        String content = objectMapper.writeValueAsString(addTodoRequest);
+
+        doNothing().when(todoService).saveTodo(addTodoRequest);
+
+        mockMvc.perform(post("/todo")
+                       .content(content)
+                       .contentType(MediaType.APPLICATION_JSON)
+                       .accept(MediaType.APPLICATION_JSON))
+               .andDo(print())
+               .andExpect(status().isBadRequest());
+    }
+
 }

@@ -80,16 +80,4 @@ class TodoServiceTest {
         todoService.saveTodo(addTodoRequest);
         verify(todoMapper).insertTodo(any(Todo.class));
     }
-
-    @Test
-    public void saveTodoFailWhenNameIsEmpty() throws Exception {
-
-        AddTodoRequest addTodoRequest = AddTodoRequest.builder()
-                .name(null)
-                .description("집 앞 슈퍼에서 물 사오기")
-                .build();
-
-        //then
-        todoService.saveTodo(addTodoRequest);
-    }
 }

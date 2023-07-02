@@ -17,6 +17,21 @@ public class TodoEnd2EndTest {
     int port;
 
     @Test
+    public void addTodoItemFail() {
+
+        RestAssured.port = port;
+
+        AddTodoRequest addTodoRequest = AddTodoRequest.builder()
+                                                      .name("")
+                                                      .description("물 사러 갔다오기")
+                                                      .build();
+
+        ExtractableResponse<Response> response = addTodo(addTodoRequest);
+
+        assertThat(response.statusCode()).isEqualTo(400);
+    }
+
+    @Test
     public void addTodoItemSuccess() {
 
         RestAssured.port = port;

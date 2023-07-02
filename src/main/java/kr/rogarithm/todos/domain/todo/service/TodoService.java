@@ -1,12 +1,15 @@
 package kr.rogarithm.todos.domain.todo.service;
 
+import javax.validation.Valid;
 import kr.rogarithm.todos.domain.todo.dao.TodoMapper;
 import kr.rogarithm.todos.domain.todo.domain.Todo;
 import kr.rogarithm.todos.domain.todo.dto.AddTodoRequest;
 import kr.rogarithm.todos.domain.todo.dto.TodoResponse;
 import kr.rogarithm.todos.domain.todo.exception.TodoItemNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
+@Validated
 @Service
 public class TodoService {
 
@@ -28,7 +31,7 @@ public class TodoService {
         return TodoResponse.of(todo);
     }
 
-    public void saveTodo(AddTodoRequest addTodoRequest) {
+    public void saveTodo(@Valid AddTodoRequest addTodoRequest) {
 
         todoMapper.insertTodo(addTodoRequest.toTodo());
     }

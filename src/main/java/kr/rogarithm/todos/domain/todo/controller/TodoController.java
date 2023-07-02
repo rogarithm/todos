@@ -1,6 +1,5 @@
 package kr.rogarithm.todos.domain.todo.controller;
 
-import javax.validation.Valid;
 import kr.rogarithm.todos.domain.todo.dto.AddTodoRequest;
 import kr.rogarithm.todos.domain.todo.dto.TodoResponse;
 import kr.rogarithm.todos.domain.todo.service.TodoService;
@@ -29,7 +28,7 @@ public class TodoController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Void> addTodo(@Valid @RequestBody AddTodoRequest addTodoRequest) {
+    public ResponseEntity<Void> addTodo(@RequestBody AddTodoRequest addTodoRequest) {
         todoService.saveTodo(addTodoRequest);
         return ResponseEntity.ok().build();
     }

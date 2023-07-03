@@ -1,5 +1,6 @@
 package kr.rogarithm.todos.domain.todo.controller;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -92,7 +93,7 @@ class TodoControllerTest {
         String content = objectMapper.writeValueAsString(addTodoRequest);
 
         //when
-        doNothing().when(todoService).saveTodo(addTodoRequest);
+        doNothing().when(todoService).saveTodo(eq(addTodoRequest));
 
         //then
         mockMvc.perform(post("/todo")
@@ -101,6 +102,8 @@ class TodoControllerTest {
                        .accept(MediaType.APPLICATION_JSON))
                .andDo(print())
                .andExpect(status().isOk());
+
+        verify(todoService).saveTodo(eq(addTodoRequest));
     }
 
 }

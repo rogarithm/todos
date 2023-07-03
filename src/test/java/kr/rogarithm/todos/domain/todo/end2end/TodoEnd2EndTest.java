@@ -43,6 +43,7 @@ public class TodoEnd2EndTest {
 
         ExtractableResponse<Response> response = addTodo(request);
 
+        assertThat(response.statusCode()).isEqualTo(200);
     }
 
     private ExtractableResponse<Response> addTodo(AddTodoRequest addTodoRequest) {

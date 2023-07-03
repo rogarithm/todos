@@ -2,12 +2,14 @@ package kr.rogarithm.todos.domain.todo.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import kr.rogarithm.todos.domain.todo.dao.TodoMapper;
 import kr.rogarithm.todos.domain.todo.domain.Todo;
+import kr.rogarithm.todos.domain.todo.dto.AddTodoRequest;
 import kr.rogarithm.todos.domain.todo.dto.TodoResponse;
 import kr.rogarithm.todos.domain.todo.exception.TodoItemNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -61,5 +63,21 @@ class TodoServiceTest {
         assertThrows(TodoItemNotFoundException.class,
                 () -> todoService.getTodoById(invalidId));
         verify(todoMapper).selectTodoById(invalidId);
+    }
+
+    @Test
+    public void saveTodoSuccessWhenRequestIsValid() {
+
+        //given
+        AddTodoRequest addTodoRequest = AddTodoRequest.builder()
+                                                      .name("물 사기")
+                                                      .description("집 앞 슈퍼에서 물 사오기")
+                                                      .build();
+        //when
+        when(todoMapper.insertTodo(any(Todo.class))).thenReturn(1);
+
+        //then
+        todoService.saveTodo(addTodoRequest);
+        verify(todoMapper).insertTodo(any(Todo.class));
     }
 }

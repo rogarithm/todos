@@ -36,6 +36,6 @@ out/
 ### VS Code ###
 .vscode/
 
-todo
+todo-list/todo
 !**/src/main/**/todo/
 !**/src/test/**/todo/

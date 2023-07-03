@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import kr.rogarithm.todos.domain.todo.dto.AddTodoRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -14,6 +15,49 @@ public class TodoEnd2EndTest {
 
     @LocalServerPort
     int port;
+
+    @Test
+    public void addTodoItemFail() {
+
+        RestAssured.port = port;
+
+        AddTodoRequest requestViolatesConstraint = AddTodoRequest.builder()
+                                                      .name("")
+                                                      .description("물 사러 갔다오기")
+                                                      .build();
+
+        ExtractableResponse<Response> response = addTodo(requestViolatesConstraint);
+
+        assertThat(response.statusCode()).isEqualTo(400);
+    }
+
+    @Test
+    public void addTodoItemSuccess() {
+
+        RestAssured.port = port;
+
+        AddTodoRequest request = AddTodoRequest.builder()
+                                                      .name("심부름")
+                                                      .description("물 사러 갔다오기")
+                                                      .build();
+
+        ExtractableResponse<Response> response = addTodo(request);
+
+        assertThat(response.statusCode()).isEqualTo(200);
+    }
+
+    private ExtractableResponse<Response> addTodo(AddTodoRequest addTodoRequest) {
+
+        return RestAssured
+                .given().log().all()
+                .contentType("application/json")
+                .body(addTodoRequest)
+                .when()
+                .post("/todo")
+                .then()
+                .log().all()
+                .extract();
+    }
 
     @Test
     public void getTodoItemByIdSuccess() throws Exception {
@@ -32,9 +76,9 @@ public class TodoEnd2EndTest {
 
         RestAssured.port = port;
 
-        Long validId = -1L;
+        Long invalidId = -1L;
 
-        ExtractableResponse<Response> response = getTodoById(validId);
+        ExtractableResponse<Response> response = getTodoById(invalidId);
 
         assertThat(response.statusCode()).isEqualTo(404);
     }

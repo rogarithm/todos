@@ -13,4 +13,12 @@
     WHERE id = #{id}
   </select>
 
+  <insert id="insertTodo" parameterType="kr.rogarithm.todos.domain.todo.domain.Todo"
+    keyProperty="id" useGeneratedKeys="true" >
+    INSERT INTO todo
+    (name, description, state)
+    VALUES
+    (#{name}, #{description}, #{state})
+  </insert>
+
 </mapper>

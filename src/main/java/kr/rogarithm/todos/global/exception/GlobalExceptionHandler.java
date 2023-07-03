@@ -1,5 +1,9 @@
 package kr.rogarithm.todos.global.exception;
 
+import java.util.HashMap;
+import java.util.Map;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import kr.rogarithm.todos.domain.auth.exception.AuthenticationFailedException;
 import kr.rogarithm.todos.domain.todo.exception.TodoItemNotFoundException;
 import kr.rogarithm.todos.domain.user.exception.DuplicateAccountException;
@@ -14,6 +18,17 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    protected ResponseEntity<Map<String, String>> constraintViolationException(ConstraintViolationException e) {
+
+        Map<String, String> errors = new HashMap<>();
+        for (ConstraintViolation<?> violation : e.getConstraintViolations()) {
+            errors.put(violation.getRootBeanClass().getName(), violation.getMessage());
+         }
+
+        return ResponseEntity.badRequest().body(errors);
+    }
 
     @ExceptionHandler(TodoItemNotFoundException.class)
     protected ResponseEntity<Void> todoItemNotFoundException(TodoItemNotFoundException e) {

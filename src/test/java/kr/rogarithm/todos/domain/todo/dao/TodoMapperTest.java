@@ -1,6 +1,7 @@
 package kr.rogarithm.todos.domain.todo.dao;
 
 import kr.rogarithm.todos.domain.todo.domain.Todo;
+import kr.rogarithm.todos.domain.todo.dto.AddTodoRequest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ class TodoMapperTest {
     TodoMapper todoMapper;
 
     @Test
-    public void selectTodoByInvalidId() {
+    public void selectTodoFailsWhenIdIsInvalid() {
 
         Long invalidId = -1L;
         Todo todo = todoMapper.selectTodoById(invalidId);
@@ -21,10 +22,23 @@ class TodoMapperTest {
     }
 
     @Test
-    public void selectTodoByValidId() {
+    public void selectTodoSuccessWhenIdIsValid() {
 
         Long validId = 1L;
         Todo todo = todoMapper.selectTodoById(validId);
         Assertions.assertThat(todo.getId()).isEqualTo(validId);
+    }
+
+    @Test
+    public void insertTodoSuccessWhenTodoItemIsValid() {
+
+        Todo todo = AddTodoRequest.builder()
+                                  .name("물 사기")
+                                  .description("집 앞 슈퍼에서 물 사오기")
+                                  .build()
+                                  .toTodo();
+
+        int affected = todoMapper.insertTodo(todo);
+        Assertions.assertThat(affected).isEqualTo(1);
     }
 }

@@ -3,6 +3,7 @@ package kr.rogarithm.todos.domain.todo.controller;
 import kr.rogarithm.todos.domain.todo.dto.AddTodoRequest;
 import kr.rogarithm.todos.domain.todo.dto.TodoResponse;
 import kr.rogarithm.todos.domain.todo.service.TodoService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,12 +25,13 @@ public class TodoController {
     @GetMapping("/{todoId}")
     public ResponseEntity<TodoResponse> getTodo(@PathVariable(name = "todoId") Long todoId) {
         TodoResponse todoResponse = todoService.getTodoById(todoId);
-        return ResponseEntity.ok(todoResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(todoResponse);
     }
 
     @PostMapping("")
     public ResponseEntity<Void> addTodo(@RequestBody AddTodoRequest addTodoRequest) {
         todoService.saveTodo(addTodoRequest);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
+
     }
 }

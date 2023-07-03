@@ -21,10 +21,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     protected ResponseEntity<Map<String, String>> constraintViolationException(ConstraintViolationException e) {
+
         Map<String, String> errors = new HashMap<>();
         for (ConstraintViolation<?> violation : e.getConstraintViolations()) {
             errors.put(violation.getRootBeanClass().getName(), violation.getMessage());
          }
+
         return ResponseEntity.badRequest().body(errors);
     }
 

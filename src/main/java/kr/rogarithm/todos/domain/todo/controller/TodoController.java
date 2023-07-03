@@ -24,14 +24,15 @@ public class TodoController {
 
     @GetMapping("/{todoId}")
     public ResponseEntity<TodoResponse> getTodo(@PathVariable(name = "todoId") Long todoId) {
+
         TodoResponse todoResponse = todoService.getTodoById(todoId);
         return ResponseEntity.status(HttpStatus.OK).body(todoResponse);
     }
 
     @PostMapping("")
     public ResponseEntity<Void> addTodo(@RequestBody AddTodoRequest addTodoRequest) {
+
         todoService.saveTodo(addTodoRequest);
         return ResponseEntity.status(HttpStatus.OK).build();
-
     }
 }

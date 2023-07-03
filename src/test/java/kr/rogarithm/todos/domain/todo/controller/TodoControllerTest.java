@@ -41,9 +41,13 @@ class TodoControllerTest {
     @Test
     public void getTodoByIdFailsWhenIdIsInvalid() throws Exception {
 
+        //given
         Long invalidId = -1L;
+
+        //when
         when(todoService.getTodoById(invalidId)).thenThrow(TodoItemNotFoundException.class);
 
+        //then
         this.mockMvc.perform(get("/todo/{todoId}", invalidId))
                     .andDo(print())
                     .andExpect(status().isNotFound());
@@ -54,7 +58,9 @@ class TodoControllerTest {
     @Test
     public void getTodoByIdSuccessWhenIdIsValid() throws Exception {
 
+        //given
         Long validId = 1L;
+
         Todo todoItem = Todo.builder()
                             .id(1L)
                             .name("물 사기")
@@ -62,8 +68,11 @@ class TodoControllerTest {
                             .state("INCOMPLETE")
                             .createdAt(LocalDateTime.of(2023, 6, 21, 10, 30))
                             .build();
+
+        //when
         when(todoService.getTodoById(validId)).thenReturn(TodoResponse.of(todoItem));
 
+        //then
         this.mockMvc.perform(get("/todo/{todoId}", validId))
                     .andDo(print())
                     .andExpect(status().isOk());
@@ -74,6 +83,7 @@ class TodoControllerTest {
     @Test
     public void addTodoSuccess() throws Exception {
 
+        //given
         AddTodoRequest addTodoRequest = AddTodoRequest.builder()
                                                       .name("물 사기")
                                                       .description("집 앞 슈퍼에서 물 사오기")
@@ -81,8 +91,10 @@ class TodoControllerTest {
 
         String content = objectMapper.writeValueAsString(addTodoRequest);
 
+        //when
         doNothing().when(todoService).saveTodo(addTodoRequest);
 
+        //then
         mockMvc.perform(post("/todo")
                        .content(content)
                        .contentType(MediaType.APPLICATION_JSON)

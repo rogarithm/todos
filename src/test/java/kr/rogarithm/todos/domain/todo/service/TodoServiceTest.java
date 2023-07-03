@@ -66,7 +66,7 @@ class TodoServiceTest {
     }
 
     @Test
-    public void saveTodoSuccess() {
+    public void saveTodoSuccessWhenRequestIsValid() {
 
         //given
         AddTodoRequest addTodoRequest = AddTodoRequest.builder()

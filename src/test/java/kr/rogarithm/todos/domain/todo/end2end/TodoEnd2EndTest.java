@@ -21,12 +21,12 @@ public class TodoEnd2EndTest {
 
         RestAssured.port = port;
 
-        AddTodoRequest addTodoRequest = AddTodoRequest.builder()
+        AddTodoRequest requestViolatesConstraint = AddTodoRequest.builder()
                                                       .name("")
                                                       .description("물 사러 갔다오기")
                                                       .build();
 
-        ExtractableResponse<Response> response = addTodo(addTodoRequest);
+        ExtractableResponse<Response> response = addTodo(requestViolatesConstraint);
 
         assertThat(response.statusCode()).isEqualTo(400);
     }
@@ -36,12 +36,13 @@ public class TodoEnd2EndTest {
 
         RestAssured.port = port;
 
-        AddTodoRequest addTodoRequest = AddTodoRequest.builder()
+        AddTodoRequest request = AddTodoRequest.builder()
                                                       .name("심부름")
                                                       .description("물 사러 갔다오기")
                                                       .build();
 
-        ExtractableResponse<Response> response = addTodo(addTodoRequest);
+        ExtractableResponse<Response> response = addTodo(request);
+
     }
 
     private ExtractableResponse<Response> addTodo(AddTodoRequest addTodoRequest) {
@@ -74,9 +75,9 @@ public class TodoEnd2EndTest {
 
         RestAssured.port = port;
 
-        Long validId = -1L;
+        Long invalidId = -1L;
 
-        ExtractableResponse<Response> response = getTodoById(validId);
+        ExtractableResponse<Response> response = getTodoById(invalidId);
 
         assertThat(response.statusCode()).isEqualTo(404);
     }

@@ -14,7 +14,7 @@ class TodoMapperTest {
     TodoMapper todoMapper;
 
     @Test
-    public void selectTodoByInvalidId() {
+    public void selectTodoFailsWhenIdIsInvalid() {
 
         Long invalidId = -1L;
         Todo todo = todoMapper.selectTodoById(invalidId);
@@ -22,7 +22,7 @@ class TodoMapperTest {
     }
 
     @Test
-    public void selectTodoByValidId() {
+    public void selectTodoSuccessWhenIdIsValid() {
 
         Long validId = 1L;
         Todo todo = todoMapper.selectTodoById(validId);
@@ -30,7 +30,7 @@ class TodoMapperTest {
     }
 
     @Test
-    public void insertTodo() {
+    public void insertTodoSuccessWhenTodoItemIsValid() {
 
         Todo todo = AddTodoRequest.builder()
                                   .name("물 사기")

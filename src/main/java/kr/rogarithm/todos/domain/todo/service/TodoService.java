@@ -1,5 +1,6 @@
 package kr.rogarithm.todos.domain.todo.service;
 
+import java.util.List;
 import javax.validation.Valid;
 import kr.rogarithm.todos.domain.todo.dao.TodoMapper;
 import kr.rogarithm.todos.domain.todo.domain.Todo;
@@ -29,6 +30,10 @@ public class TodoService {
         }
 
         return TodoResponse.of(todo);
+    }
+
+    public List<TodoResponse> getTodos(String state, Long size) {
+        return null;
     }
 
     public void saveTodo(@Valid AddTodoRequest addTodoRequest) {

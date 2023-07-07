@@ -60,6 +60,45 @@ public class TodoEnd2EndTest {
     }
 
     @Test
+    public void getTodosSuccess() throws Exception {
+
+        RestAssured.port = port;
+
+        String state = "ALL";
+        Long size = 3L;
+
+        ExtractableResponse<Response> response = getTodos(state, size);
+
+        assertThat(response.statusCode()).isEqualTo(200);
+    }
+
+    @Test
+    public void getTodosFail() throws Exception {
+
+        RestAssured.port = port;
+
+        String state = "ALL";
+        Long size = -1L;
+
+        ExtractableResponse<Response> response = getTodos(state, size);
+
+        assertThat(response.statusCode()).isEqualTo(400);
+    }
+
+    public static ExtractableResponse<Response> getTodos(String state, Long size) {
+
+        return RestAssured
+                .given().log().all()
+                .param("state", state)
+                .param("size", size)
+                .when()
+                .get("/todo")
+                .then()
+                .log().all()
+                .extract();
+    }
+
+    @Test
     public void getTodoItemByIdSuccess() throws Exception {
 
         RestAssured.port = port;

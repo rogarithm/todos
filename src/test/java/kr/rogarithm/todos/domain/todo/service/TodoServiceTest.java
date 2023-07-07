@@ -104,13 +104,11 @@ class TodoServiceTest {
         String state = "ALL";
 
         //when
-        when(todoMapper.selectTodos("INCOMPLETE", size)).thenReturn(List.of(todo2));
-        when(todoMapper.selectTodos("COMPLETE", size)).thenReturn(List.of(todo1));
+        when(todoMapper.selectTodos(state, size)).thenReturn(List.of(todo1, todo2));
 
         //then
         todoService.getTodos(state, size);
-        verify(todoMapper).selectTodos("INCOMPLETE", size);
-        verify(todoMapper).selectTodos("COMPLETE", size);
+        verify(todoMapper).selectTodos(state, size);
     }
 
     @Test
@@ -124,7 +122,7 @@ class TodoServiceTest {
                          .state("INCOMPLETE")
                          .createdAt(LocalDateTime.of(2023, 7, 6, 0, 0))
                          .build();
-        Long size = 2L;
+        Long size = 1L;
         String state = "INCOMPLETE";
 
         //when
@@ -146,7 +144,7 @@ class TodoServiceTest {
                          .state("COMPLETE")
                          .createdAt(LocalDateTime.of(2023, 7, 6, 0, 0))
                          .build();
-        Long size = 2L;
+        Long size = 1L;
         String state = "COMPLETE";
 
         //when

@@ -12,4 +12,6 @@ public interface TodoMapper {
     List<Todo> selectTodos(String state, Long size);
 
     int insertTodo(Todo todo);
+
+    void deleteTodoByNameAndDescription(String name, String description);
 }

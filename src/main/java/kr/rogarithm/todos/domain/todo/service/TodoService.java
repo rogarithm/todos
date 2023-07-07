@@ -1,6 +1,8 @@
 package kr.rogarithm.todos.domain.todo.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.validation.Valid;
 import kr.rogarithm.todos.domain.todo.dao.TodoMapper;
 import kr.rogarithm.todos.domain.todo.domain.Todo;
@@ -33,7 +35,25 @@ public class TodoService {
     }
 
     public List<TodoResponse> getTodos(String state, Long size) {
-        return null;
+
+        if (state.equals("INCOMPLETE")) {
+            List<Todo> incompletes = todoMapper.selectTodos("INCOMPLETE", size);
+            return incompletes.stream()
+                              .map(TodoResponse::of)
+                              .collect(Collectors.toList());
+        }
+        if (state.equals("COMPLETE")) {
+            List<Todo> completes = todoMapper.selectTodos("COMPLETE", size);
+            return completes.stream()
+                            .map(TodoResponse::of)
+                            .collect(Collectors.toList());
+        } else {
+            List<Todo> incompletes = todoMapper.selectTodos("INCOMPLETE", size);
+            List<Todo> completes = todoMapper.selectTodos("COMPLETE", size);
+            return Stream.concat(incompletes.stream(), completes.stream())
+                         .map(TodoResponse::of)
+                         .collect(Collectors.toList());
+        }
     }
 
     public void saveTodo(@Valid AddTodoRequest addTodoRequest) {

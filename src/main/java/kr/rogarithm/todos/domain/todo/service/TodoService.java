@@ -3,6 +3,8 @@ package kr.rogarithm.todos.domain.todo.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
 import kr.rogarithm.todos.domain.todo.dao.TodoMapper;
 import kr.rogarithm.todos.domain.todo.domain.Todo;
 import kr.rogarithm.todos.domain.todo.dto.AddTodoRequest;
@@ -33,7 +35,7 @@ public class TodoService {
         return TodoResponse.of(todo);
     }
 
-    public List<TodoResponse> getTodos(String state, Long size) {
+    public List<TodoResponse> getTodos(@Pattern(regexp = "ALL|INCOMPLETE|COMPLETE") String state, @Min(1L) Long size) {
 
         List<Todo> todos = todoMapper.selectTodos(state, size);
         return todos.stream()

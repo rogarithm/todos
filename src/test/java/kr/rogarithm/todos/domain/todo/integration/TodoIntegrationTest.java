@@ -2,6 +2,7 @@ package kr.rogarithm.todos.domain.todo.integration;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.List;
 import javax.validation.ConstraintViolationException;
 import kr.rogarithm.todos.domain.todo.controller.TodoController;
 import kr.rogarithm.todos.domain.todo.dto.AddTodoRequest;
@@ -26,4 +27,35 @@ public class TodoIntegrationTest {
         assertThrows(ConstraintViolationException.class, () -> todoController.addTodo(addTodoRequest));
     }
 
+    @Test
+    public void getTodosFailWhenSizeNotSatisfyConstraint() {
+
+        List<Long> invalidSizes = List.of(-1L, 0L);
+
+        for (Long size : invalidSizes) {
+            assertThrows(ConstraintViolationException.class, () -> todoController.getTodos("ALL", size));
+        }
+    }
+
+    @Test
+    public void getTodosFailWhenStateNotSatisfyConstraint() {
+
+        Long size = 1L;
+        List<String> invalidState = List.of("INVALID", "NONEXISTING", "STATE");
+
+        for (String state : invalidState) {
+            assertThrows(ConstraintViolationException.class, () -> todoController.getTodos(state, size));
+        }
+    }
+
+    @Test
+    public void getTodosSuccessWhenParameterSatisfyConstraint() {
+
+        Long size = 1L;
+        List<String> validState = List.of("ALL", "INCOMPLETE", "COMPLETE");
+
+        for (String state : validState) {
+            todoController.getTodos(state, size);
+        }
+    }
 }

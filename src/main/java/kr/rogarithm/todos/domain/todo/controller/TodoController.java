@@ -33,7 +33,7 @@ public class TodoController {
 
     @GetMapping("")
     public ResponseEntity<List<TodoResponse>> getTodos(
-            @RequestParam(defaultValue = "ALL") String state,
+            @RequestParam(required = false, defaultValue = "ALL") String state,
             @RequestParam Long size
     ) {
         List<TodoResponse> todos = todoService.getTodos(state, size);

@@ -9,7 +9,7 @@ public interface TodoMapper {
 
     Todo selectTodoById(Long todoId);
 
-    int insertTodo(Todo todo);
-
     List<Todo> selectTodos(String state, Long size);
+
+    int insertTodo(Todo todo);
 }

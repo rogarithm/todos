@@ -13,6 +13,17 @@
     WHERE id = #{id}
   </select>
 
+  <select id="selectTodos" parameterType="Long"
+    resultType="kr.rogarithm.todos.domain.todo.domain.Todo">
+    SELECT
+    id, name, description, state, created_at
+    FROM todo
+    <if test="state == 'INCOMPLETE' or state == 'COMPLETE'">
+      WHERE state = #{state}
+    </if>
+    LIMIT #{size}
+  </select>
+
   <insert id="insertTodo" parameterType="kr.rogarithm.todos.domain.todo.domain.Todo"
     keyProperty="id" useGeneratedKeys="true" >
     INSERT INTO todo
@@ -20,5 +31,11 @@
     VALUES
     (#{name}, #{description}, #{state})
   </insert>
+
+  <delete id="deleteTodoByNameAndDescription">
+    DELETE FROM todo
+    WHERE name = #{name}
+    AND description = #{description}
+  </delete>
 
 </mapper>

@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -15,6 +16,7 @@ import java.util.List;
 import kr.rogarithm.todos.domain.todo.domain.Todo;
 import kr.rogarithm.todos.domain.todo.dto.AddTodoRequest;
 import kr.rogarithm.todos.domain.todo.dto.TodoResponse;
+import kr.rogarithm.todos.domain.todo.dto.UpdateTodoRequest;
 import kr.rogarithm.todos.domain.todo.exception.TodoItemNotFoundException;
 import kr.rogarithm.todos.domain.todo.service.TodoService;
 import org.jeasy.random.EasyRandom;
@@ -46,6 +48,8 @@ class TodoControllerTest {
 
     AddTodoRequest addTodoRequest;
 
+    UpdateTodoRequest updateTodoRequest;
+
     Long id;
 
     Todo todo;
@@ -54,6 +58,7 @@ class TodoControllerTest {
     public void setUp() {
         generator = new EasyRandom();
         addTodoRequest = generator.nextObject(AddTodoRequest.class);
+        updateTodoRequest = generator.nextObject(UpdateTodoRequest.class);
         id = generator.nextObject(Long.class);
         todo = generator.nextObject(Todo.class);
     }
@@ -206,5 +211,25 @@ class TodoControllerTest {
                .andExpect(status().isOk());
 
         verify(todoService).getTodos(state, size);
+    }
+
+    @Test
+    public void updateTodoSuccessWhenValidRequest() throws Exception {
+
+        //given
+        String content = objectMapper.writeValueAsString(updateTodoRequest);
+
+        //when
+        doNothing().when(todoService).updateTodo(updateTodoRequest);
+
+        //then
+        mockMvc.perform(put("/todo")
+                       .content(content)
+                       .contentType(MediaType.APPLICATION_JSON)
+                       .accept(MediaType.APPLICATION_JSON))
+               .andDo(print())
+               .andExpect(status().isOk());
+
+        verify(todoService).updateTodo(updateTodoRequest);
     }
 }

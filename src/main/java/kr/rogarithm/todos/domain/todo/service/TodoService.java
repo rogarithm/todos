@@ -9,6 +9,7 @@ import kr.rogarithm.todos.domain.todo.dao.TodoMapper;
 import kr.rogarithm.todos.domain.todo.domain.Todo;
 import kr.rogarithm.todos.domain.todo.dto.AddTodoRequest;
 import kr.rogarithm.todos.domain.todo.dto.TodoResponse;
+import kr.rogarithm.todos.domain.todo.dto.UpdateTodoRequest;
 import kr.rogarithm.todos.domain.todo.exception.TodoItemNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -46,5 +47,8 @@ public class TodoService {
     public void saveTodo(@Valid AddTodoRequest addTodoRequest) {
 
         todoMapper.insertTodo(addTodoRequest.toTodo());
+    }
+
+    public void updateTodo(@Valid UpdateTodoRequest updateTodoRequest) {
     }
 }

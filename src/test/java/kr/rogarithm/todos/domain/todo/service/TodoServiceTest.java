@@ -6,14 +6,21 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDateTime;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.function.Predicate;
 import kr.rogarithm.todos.domain.todo.dao.TodoMapper;
 import kr.rogarithm.todos.domain.todo.domain.Todo;
 import kr.rogarithm.todos.domain.todo.dto.AddTodoRequest;
 import kr.rogarithm.todos.domain.todo.dto.TodoResponse;
 import kr.rogarithm.todos.domain.todo.exception.TodoItemNotFoundException;
 import org.jeasy.random.EasyRandom;
+import org.jeasy.random.EasyRandomParameters;
+import org.jeasy.random.FieldPredicates;
+import org.jeasy.random.api.Randomizer;
+import org.jeasy.random.randomizers.number.LongRandomizer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,11 +39,33 @@ class TodoServiceTest {
 
     EasyRandom generator;
 
+    EasyRandomParameters todoParameters;
+
     Long id;
+
+    class StateRandomizer implements Randomizer<String> {
+
+        private final List<String> states = List.of("INCOMPLETE", "COMPLETE");
+
+        @Override
+        public String getRandomValue() {
+            return states.get(new Random().nextInt(1));
+        }
+    }
 
     @BeforeEach
     public void setUp() {
-        generator = new EasyRandom();
+        Predicate<Field> isId = FieldPredicates.named("id")
+                                               .and(FieldPredicates.ofType(Long.class))
+                                               .and(FieldPredicates.inClass(Todo.class));
+        Predicate<Field> isState = FieldPredicates.named("state")
+                                                  .and(FieldPredicates.ofType(String.class))
+                                                  .and(FieldPredicates.inClass(Todo.class));
+        todoParameters = new EasyRandomParameters()
+                .randomize(isId, new LongRandomizer(10L))
+                .randomize(isState, new StateRandomizer());
+
+        generator = new EasyRandom(todoParameters);
         id = generator.nextObject(Long.class);
     }
 
@@ -85,27 +114,21 @@ class TodoServiceTest {
     public void getTodosSuccess() {
 
         //given
-        Todo todo1 = Todo.builder()
-                         .id(1L)
-                         .name("커피 원두 구입")
-                         .description("디벨로핑룸 가서 커피 원두 사기")
-                         .state("COMPLETE")
-                         .createdAt(LocalDateTime.of(2023, 7, 6, 0, 0))
-                         .build();
-        Todo todo2 = Todo.builder()
-                         .id(2L)
-                         .name("회덮밥 사오기")
-                         .description("바다회 사랑 가서 회덮밥 포장해오기")
-                         .state("INCOMPLETE")
-                         .createdAt(LocalDateTime.of(2023, 7, 6, 0, 0))
-                         .build();
-        Long size = 2L;
+        Long size = generator.nextLong(1, 10);
+        List<Todo> todos = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            todos.add(generator.nextObject(Todo.class));
+        }
         String state = "ALL";
 
         //when
-        when(todoMapper.selectTodos(state, size)).thenReturn(List.of(todo1, todo2));
+        when(todoMapper.selectTodos(state, size)).thenReturn(todos);
 
         //then
+        for (Todo todo : todos) {
+            String expected = todo.getState();
+            assertThat(expected).isIn("COMPLETE", "INCOMPLETE");
+        }
         todoService.getTodos(state, size);
         verify(todoMapper).selectTodos(state, size);
     }
@@ -114,20 +137,25 @@ class TodoServiceTest {
     public void getIncompleteTodos() {
 
         //given
-        Todo todo = Todo.builder()
-                         .id(2L)
-                         .name("회덮밥 사오기")
-                         .description("바다회 사랑 가서 회덮밥 포장해오기")
-                         .state("INCOMPLETE")
-                         .createdAt(LocalDateTime.of(2023, 7, 6, 0, 0))
-                         .build();
-        Long size = 1L;
+        Long size = generator.nextLong(1, 10);
         String state = "INCOMPLETE";
 
+        List<Todo> todos = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            Todo todo = generator.nextObject(Todo.class);
+            if (todo.getState().equals("INCOMPLETE")) {
+                todos.add(todo);
+            }
+        }
+
         //when
-        when(todoMapper.selectTodos(state, size)).thenReturn(List.of(todo));
+        when(todoMapper.selectTodos(state, size)).thenReturn(todos);
 
         //then
+        for (Todo todo : todos) {
+            String expected = todo.getState();
+            assertThat(expected).isEqualTo("INCOMPLETE");
+        }
         todoService.getTodos(state, size);
         verify(todoMapper).selectTodos(state, size);
     }
@@ -136,20 +164,25 @@ class TodoServiceTest {
     public void getCompleteTodos() {
 
         //given
-        Todo todo = Todo.builder()
-                         .id(1L)
-                         .name("커피 원두 구입")
-                         .description("디벨로핑룸 가서 커피 원두 사기")
-                         .state("COMPLETE")
-                         .createdAt(LocalDateTime.of(2023, 7, 6, 0, 0))
-                         .build();
-        Long size = 1L;
+        Long size = generator.nextLong(1, 10);
         String state = "COMPLETE";
 
+        List<Todo> todos = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            Todo todo = generator.nextObject(Todo.class);
+            if (todo.getState().equals("COMPLETE")) {
+                todos.add(todo);
+            }
+        }
+
         //when
-        when(todoMapper.selectTodos(state, size)).thenReturn(List.of(todo));
+        when(todoMapper.selectTodos(state, size)).thenReturn(todos);
 
         //then
+        for (Todo todo : todos) {
+            String expected = todo.getState();
+            assertThat(expected).isEqualTo("COMPLETE");
+        }
         todoService.getTodos(state, size);
         verify(todoMapper).selectTodos(state, size);
     }

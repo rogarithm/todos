@@ -27,6 +27,7 @@ dependencies {
 
 	testImplementation 'io.rest-assured:rest-assured'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.jeasy:easy-random-core:5.0.0'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'

@@ -5,8 +5,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import kr.rogarithm.todos.domain.user.domain.User;
+import java.lang.reflect.Field;
+import java.util.Random;
+import java.util.function.Predicate;
 import kr.rogarithm.todos.domain.user.dto.JoinUserRequest;
+import org.jeasy.random.EasyRandom;
+import org.jeasy.random.EasyRandomParameters;
+import org.jeasy.random.FieldPredicates;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,48 +23,34 @@ public class UserEnd2EndTest {
     @LocalServerPort
     int port;
 
-    User validUser;
+    EasyRandom generator;
 
-    User userDuplicateAccount;
+    JoinUserRequest request;
 
-    User userDuplicateNickname;
-
-    User userInvalidCrn;
+    JoinUserRequest invalidRequest;
 
     @BeforeEach
     public void setUp() {
 
-        validUser = User.builder()
-                        .account("adam")
-                        .password("g1it0r!")
-                        .nickname("guitar-guru")
-                        .phone("010-1010-1010")
-                        .crn("123-45-67890")
-                        .build();
+        Predicate<Field> crn = FieldPredicates.named("crn")
+                                              .and(FieldPredicates.ofType(String.class))
+                                              .and(FieldPredicates.inClass(JoinUserRequest.class));
 
-        userDuplicateAccount = User.builder()
-                                   .account("sehoon")
-                                   .password("q1w2e3!")
-                                   .nickname("shrimp-cracker")
-                                   .phone("010-1010-1010")
-                                   .crn("123-45-67890")
-                                   .build();
+        EasyRandomParameters joinUserParameters = new EasyRandomParameters()
+                .seed(new Random().nextInt())
+                .randomize(crn, () -> "123-45-67890");
 
-        userDuplicateNickname = User.builder()
-                                   .account("kate")
-                                   .password("q1w2e3!")
-                                   .nickname("shrimp-cracker")
-                                   .phone("010-1010-1010")
-                                   .crn("123-45-67890")
-                                   .build();
+        generator = new EasyRandom(joinUserParameters);
 
-        userInvalidCrn = User.builder()
-                             .account("bill")
-                             .password("q1w2e3!")
-                             .nickname("kill-bill")
-                             .phone("010-1010-1010")
-                             .crn("123-45-11111")
-                             .build();
+        request = generator.nextObject(JoinUserRequest.class);
+
+        invalidRequest = JoinUserRequest.builder()
+                                        .account("bill")
+                                        .password("q1w2e3!")
+                                        .nickname("kill-bill")
+                                        .phone("010-1010-1010")
+                                        .crn("123-45-11111")
+                                        .build();
     }
 
     @Test
@@ -67,7 +58,7 @@ public class UserEnd2EndTest {
 
         RestAssured.port = port;
 
-        ExtractableResponse<Response> response = joinUser(JoinUserRequest.of(validUser));
+        ExtractableResponse<Response> response = joinUser(request);
 
         assertThat(response.statusCode()).isEqualTo(201);
     }
@@ -77,7 +68,8 @@ public class UserEnd2EndTest {
 
         RestAssured.port = port;
 
-        ExtractableResponse<Response> response = joinUser(JoinUserRequest.of(userDuplicateAccount));
+        joinUser(request);
+        ExtractableResponse<Response> response = joinUser(request);
 
         assertThat(response.statusCode()).isEqualTo(409);
     }
@@ -87,7 +79,8 @@ public class UserEnd2EndTest {
 
         RestAssured.port = port;
 
-        ExtractableResponse<Response> response = joinUser(JoinUserRequest.of(userDuplicateNickname));
+        joinUser(request);
+        ExtractableResponse<Response> response = joinUser(request);
 
         assertThat(response.statusCode()).isEqualTo(409);
     }
@@ -97,7 +90,7 @@ public class UserEnd2EndTest {
 
         RestAssured.port = port;
 
-        ExtractableResponse<Response> response = joinUser(JoinUserRequest.of(userInvalidCrn));
+        ExtractableResponse<Response> response = joinUser(invalidRequest);
 
         assertThat(response.statusCode()).isEqualTo(409);
     }

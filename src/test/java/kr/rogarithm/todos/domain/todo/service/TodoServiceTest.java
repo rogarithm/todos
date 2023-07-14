@@ -19,7 +19,6 @@ import kr.rogarithm.todos.domain.todo.exception.TodoItemNotFoundException;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 import org.jeasy.random.FieldPredicates;
-import org.jeasy.random.api.Randomizer;
 import org.jeasy.random.randomizers.number.LongRandomizer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,30 +42,23 @@ class TodoServiceTest {
 
     Long id;
 
-    class StateRandomizer implements Randomizer<String> {
-
-        private final List<String> states = List.of("INCOMPLETE", "COMPLETE");
-
-        @Override
-        public String getRandomValue() {
-            return states.get(new Random().nextInt(1));
-        }
-    }
+    Long size;
 
     @BeforeEach
     public void setUp() {
-        Predicate<Field> isId = FieldPredicates.named("id")
+        Predicate<Field> todoId = FieldPredicates.named("id")
                                                .and(FieldPredicates.ofType(Long.class))
                                                .and(FieldPredicates.inClass(Todo.class));
-        Predicate<Field> isState = FieldPredicates.named("state")
+        Predicate<Field> todoState = FieldPredicates.named("state")
                                                   .and(FieldPredicates.ofType(String.class))
                                                   .and(FieldPredicates.inClass(Todo.class));
         todoParameters = new EasyRandomParameters()
-                .randomize(isId, new LongRandomizer(10L))
-                .randomize(isState, new StateRandomizer());
+                .randomize(todoId, new LongRandomizer(10L))
+                .randomize(todoState, () -> List.of("INCOMPLETE", "COMPLETE").get(new Random().nextInt(1)));
 
         generator = new EasyRandom(todoParameters);
         id = generator.nextObject(Long.class);
+        size = generator.nextLong(1, 10);
     }
 
     @Test
@@ -114,12 +106,12 @@ class TodoServiceTest {
     public void getTodosSuccess() {
 
         //given
-        Long size = generator.nextLong(1, 10);
+        String state = "ALL";
+
         List<Todo> todos = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             todos.add(generator.nextObject(Todo.class));
         }
-        String state = "ALL";
 
         //when
         when(todoMapper.selectTodos(state, size)).thenReturn(todos);
@@ -137,7 +129,6 @@ class TodoServiceTest {
     public void getIncompleteTodos() {
 
         //given
-        Long size = generator.nextLong(1, 10);
         String state = "INCOMPLETE";
 
         List<Todo> todos = new ArrayList<>();
@@ -164,7 +155,6 @@ class TodoServiceTest {
     public void getCompleteTodos() {
 
         //given
-        Long size = generator.nextLong(1, 10);
         String state = "COMPLETE";
 
         List<Todo> todos = new ArrayList<>();

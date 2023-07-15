@@ -18,7 +18,3 @@ spring:
 # mybatis
 mybatis:
   mapper-locations: classpath:mybatis/mapper/*Mapper.xml
-logging:
-  level:
-    root: debug
-    org.apache.ibatis: trace

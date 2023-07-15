@@ -6,13 +6,21 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDateTime;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.function.Predicate;
 import kr.rogarithm.todos.domain.todo.dao.TodoMapper;
 import kr.rogarithm.todos.domain.todo.domain.Todo;
 import kr.rogarithm.todos.domain.todo.dto.AddTodoRequest;
 import kr.rogarithm.todos.domain.todo.dto.TodoResponse;
 import kr.rogarithm.todos.domain.todo.exception.TodoItemNotFoundException;
+import org.jeasy.random.EasyRandom;
+import org.jeasy.random.EasyRandomParameters;
+import org.jeasy.random.FieldPredicates;
+import org.jeasy.random.randomizers.number.LongRandomizer;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,52 +36,64 @@ class TodoServiceTest {
     @Mock
     TodoMapper todoMapper;
 
+    EasyRandom generator;
+
+    EasyRandomParameters todoParameters;
+
+    Long id;
+
+    Long size;
+
+    @BeforeEach
+    public void setUp() {
+        Predicate<Field> todoId = FieldPredicates.named("id")
+                                               .and(FieldPredicates.ofType(Long.class))
+                                               .and(FieldPredicates.inClass(Todo.class));
+        Predicate<Field> todoState = FieldPredicates.named("state")
+                                                  .and(FieldPredicates.ofType(String.class))
+                                                  .and(FieldPredicates.inClass(Todo.class));
+        todoParameters = new EasyRandomParameters()
+                .randomize(todoId, new LongRandomizer(10L))
+                .randomize(todoState, () -> List.of("INCOMPLETE", "COMPLETE").get(new Random().nextInt(1)));
+
+        generator = new EasyRandom(todoParameters);
+        id = generator.nextObject(Long.class);
+        size = generator.nextLong(1, 10);
+    }
+
     @Test
     public void validIdShouldReturnTodoItem() {
 
         //given
-        Long validId = 1L;
-        Todo todoItem = Todo.builder()
-                            .id(validId)
-                            .name("물 사기")
-                            .description("집 앞 슈퍼에서 물 사오기")
-                            .state("INCOMPLETE")
-                            .createdAt(LocalDateTime.of(2023, 6, 21, 10, 30))
-                            .build();
+        Todo todoItem = generator.nextObject(Todo.class);
 
         //when
-        when(todoMapper.selectTodoById(validId)).thenReturn(todoItem);
-        TodoResponse todoResponse = todoService.getTodoById(validId);
+        when(todoMapper.selectTodoById(id)).thenReturn(todoItem);
+        TodoResponse todoResponse = todoService.getTodoById(id);
 
         //then
-        verify(todoMapper).selectTodoById(validId);
-        assertThat(todoResponse.getId()).isEqualTo(validId);
+        verify(todoMapper).selectTodoById(id);
         assertThat(todoResponse).isNotNull();
     }
 
     @Test
     public void invalidIdShouldThrowException() {
 
-        //given
-        Long invalidId = -1L;
-
         //when
-        when(todoMapper.selectTodoById(invalidId)).thenReturn(null);
+        when(todoMapper.selectTodoById(id)).thenReturn(null);
 
         //then
         assertThrows(TodoItemNotFoundException.class,
-                () -> todoService.getTodoById(invalidId));
-        verify(todoMapper).selectTodoById(invalidId);
+                () -> todoService.getTodoById(id));
+        verify(todoMapper).selectTodoById(id);
     }
 
     @Test
     public void saveTodoSuccessWhenRequestIsValid() {
 
         //given
-        AddTodoRequest addTodoRequest = AddTodoRequest.builder()
-                                                      .name("물 사기")
-                                                      .description("집 앞 슈퍼에서 물 사오기")
-                                                      .build();
+        AddTodoRequest addTodoRequest = generator.nextObject(AddTodoRequest.class);
+
         //when
         when(todoMapper.insertTodo(any(Todo.class))).thenReturn(1);
 
@@ -86,27 +106,21 @@ class TodoServiceTest {
     public void getTodosSuccess() {
 
         //given
-        Todo todo1 = Todo.builder()
-                         .id(1L)
-                         .name("커피 원두 구입")
-                         .description("디벨로핑룸 가서 커피 원두 사기")
-                         .state("COMPLETE")
-                         .createdAt(LocalDateTime.of(2023, 7, 6, 0, 0))
-                         .build();
-        Todo todo2 = Todo.builder()
-                         .id(2L)
-                         .name("회덮밥 사오기")
-                         .description("바다회 사랑 가서 회덮밥 포장해오기")
-                         .state("INCOMPLETE")
-                         .createdAt(LocalDateTime.of(2023, 7, 6, 0, 0))
-                         .build();
-        Long size = 2L;
         String state = "ALL";
 
+        List<Todo> todos = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            todos.add(generator.nextObject(Todo.class));
+        }
+
         //when
-        when(todoMapper.selectTodos(state, size)).thenReturn(List.of(todo1, todo2));
+        when(todoMapper.selectTodos(state, size)).thenReturn(todos);
 
         //then
+        for (Todo todo : todos) {
+            String expected = todo.getState();
+            assertThat(expected).isIn("COMPLETE", "INCOMPLETE");
+        }
         todoService.getTodos(state, size);
         verify(todoMapper).selectTodos(state, size);
     }
@@ -115,20 +129,24 @@ class TodoServiceTest {
     public void getIncompleteTodos() {
 
         //given
-        Todo todo = Todo.builder()
-                         .id(2L)
-                         .name("회덮밥 사오기")
-                         .description("바다회 사랑 가서 회덮밥 포장해오기")
-                         .state("INCOMPLETE")
-                         .createdAt(LocalDateTime.of(2023, 7, 6, 0, 0))
-                         .build();
-        Long size = 1L;
         String state = "INCOMPLETE";
 
+        List<Todo> todos = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            Todo todo = generator.nextObject(Todo.class);
+            if (todo.getState().equals("INCOMPLETE")) {
+                todos.add(todo);
+            }
+        }
+
         //when
-        when(todoMapper.selectTodos(state, size)).thenReturn(List.of(todo));
+        when(todoMapper.selectTodos(state, size)).thenReturn(todos);
 
         //then
+        for (Todo todo : todos) {
+            String expected = todo.getState();
+            assertThat(expected).isEqualTo("INCOMPLETE");
+        }
         todoService.getTodos(state, size);
         verify(todoMapper).selectTodos(state, size);
     }
@@ -137,20 +155,24 @@ class TodoServiceTest {
     public void getCompleteTodos() {
 
         //given
-        Todo todo = Todo.builder()
-                         .id(1L)
-                         .name("커피 원두 구입")
-                         .description("디벨로핑룸 가서 커피 원두 사기")
-                         .state("COMPLETE")
-                         .createdAt(LocalDateTime.of(2023, 7, 6, 0, 0))
-                         .build();
-        Long size = 1L;
         String state = "COMPLETE";
 
+        List<Todo> todos = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            Todo todo = generator.nextObject(Todo.class);
+            if (todo.getState().equals("COMPLETE")) {
+                todos.add(todo);
+            }
+        }
+
         //when
-        when(todoMapper.selectTodos(state, size)).thenReturn(List.of(todo));
+        when(todoMapper.selectTodos(state, size)).thenReturn(todos);
 
         //then
+        for (Todo todo : todos) {
+            String expected = todo.getState();
+            assertThat(expected).isEqualTo("COMPLETE");
+        }
         todoService.getTodos(state, size);
         verify(todoMapper).selectTodos(state, size);
     }

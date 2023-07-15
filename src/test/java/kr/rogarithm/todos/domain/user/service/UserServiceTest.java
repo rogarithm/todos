@@ -12,6 +12,7 @@ import kr.rogarithm.todos.domain.user.exception.DuplicateAccountException;
 import kr.rogarithm.todos.domain.user.exception.DuplicateNicknameException;
 import kr.rogarithm.todos.domain.user.exception.InvalidCompanyRegistrationNumberException;
 import kr.rogarithm.todos.domain.user.validate.CompanyRegistrationNumberValidator;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,25 +33,22 @@ class UserServiceTest {
     @Mock
     CompanyRegistrationNumberValidator validator;
 
+    EasyRandom generator;
+
     User user;
+
+    JoinUserRequest request;
 
     @BeforeEach
     public void setUp() {
 
-        user = User.builder()
-                   .account("sehoongim")
-                   .password("q1w2e3!")
-                   .nickname("shrimp-cracker")
-                   .phone("010-1010-1010")
-                   .crn("123-45-67890")
-                   .build();
+        generator = new EasyRandom();
+        user = generator.nextObject(User.class);
+        request = generator.nextObject(JoinUserRequest.class);
     }
 
     @Test
     public void userIsRegisteredWhenRequestIsValid() {
-
-        //given
-        JoinUserRequest request = JoinUserRequest.of(user);
 
         //when
         when(userMapper.selectUserByAccount(request.getAccount())).thenReturn(null);
@@ -69,51 +67,42 @@ class UserServiceTest {
     @Test
     public void failRegisterUserWhenAccountIsDuplicate() {
 
-        //given
-        JoinUserRequest requestWithDuplicateAccount = JoinUserRequest.of(user);
-
         //when
-        when(userMapper.selectUserByAccount(requestWithDuplicateAccount.getAccount())).thenReturn(user);
+        when(userMapper.selectUserByAccount(request.getAccount())).thenReturn(user);
 
         //then
         Assertions.assertThrows(DuplicateAccountException.class,
-                () -> userService.registerUser(requestWithDuplicateAccount));
-        verify(userMapper).selectUserByAccount(requestWithDuplicateAccount.getAccount());
+                () -> userService.registerUser(request));
+        verify(userMapper).selectUserByAccount(request.getAccount());
     }
 
     @Test
     public void failRegisterUserWhenNicknameIsDuplicate() {
 
-        //given
-        JoinUserRequest requestWithDuplicateNickname = JoinUserRequest.of(user);
-
         //when
-        when(userMapper.selectUserByAccount(requestWithDuplicateNickname.getAccount())).thenReturn(null);
-        when(userMapper.selectUserByNickname(requestWithDuplicateNickname.getNickname())).thenReturn(user);
+        when(userMapper.selectUserByAccount(request.getAccount())).thenReturn(null);
+        when(userMapper.selectUserByNickname(request.getNickname())).thenReturn(user);
 
         //then
         Assertions.assertThrows(DuplicateNicknameException.class,
-                () -> userService.registerUser(requestWithDuplicateNickname));
-        verify(userMapper).selectUserByAccount(requestWithDuplicateNickname.getAccount());
-        verify(userMapper).selectUserByNickname(requestWithDuplicateNickname.getNickname());
+                () -> userService.registerUser(request));
+        verify(userMapper).selectUserByAccount(request.getAccount());
+        verify(userMapper).selectUserByNickname(request.getNickname());
     }
 
     @Test
     public void failRegisterUserWhenCrdIsInvalid() {
 
-        //given
-        JoinUserRequest requestWithInvalidCrn = JoinUserRequest.of(user);
-
         //when
-        when(userMapper.selectUserByAccount(requestWithInvalidCrn.getAccount())).thenReturn(null);
-        when(userMapper.selectUserByNickname(requestWithInvalidCrn.getNickname())).thenReturn(null);
-        when(validator.verifyCompanyRegistrationNumber(requestWithInvalidCrn.getCrn())).thenReturn(false);
+        when(userMapper.selectUserByAccount(request.getAccount())).thenReturn(null);
+        when(userMapper.selectUserByNickname(request.getNickname())).thenReturn(null);
+        when(validator.verifyCompanyRegistrationNumber(request.getCrn())).thenReturn(false);
 
         //then
         Assertions.assertThrows(InvalidCompanyRegistrationNumberException.class,
-                () -> userService.registerUser(requestWithInvalidCrn));
-        verify(userMapper).selectUserByAccount(requestWithInvalidCrn.getAccount());
-        verify(userMapper).selectUserByNickname(requestWithInvalidCrn.getNickname());
-        verify(validator).verifyCompanyRegistrationNumber(requestWithInvalidCrn.getCrn());
+                () -> userService.registerUser(request));
+        verify(userMapper).selectUserByAccount(request.getAccount());
+        verify(userMapper).selectUserByNickname(request.getNickname());
+        verify(validator).verifyCompanyRegistrationNumber(request.getCrn());
     }
 }

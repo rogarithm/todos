@@ -16,6 +16,8 @@ import kr.rogarithm.todos.domain.auth.exception.AuthenticationFailedException;
 import kr.rogarithm.todos.domain.user.dao.UserMapper;
 import kr.rogarithm.todos.domain.user.domain.User;
 import kr.rogarithm.todos.global.auth.JwtGenerator;
+import org.jeasy.random.EasyRandom;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,14 +36,21 @@ class AuthServiceTest {
     @Mock
     JwtGenerator jwtGenerator;
 
+    EasyRandom generator;
+
+    LoginRequest request;
+
+    User user;
+
+    @BeforeEach
+    public void setUp() {
+        generator = new EasyRandom();
+        request = generator.nextObject(LoginRequest.class);
+        user = generator.nextObject(User.class);
+    }
+
     @Test
     public void failLoginWhenAccountIsNotJoinedYet() {
-
-        //given
-        LoginRequest request = LoginRequest.builder()
-                                           .account("sehoongim")
-                                           .password("q1w2e3!")
-                                           .build();
 
         //when
         when(userMapper.selectUserByAccount(request.getAccount())).thenThrow(AuthenticationFailedException.class);
@@ -54,20 +63,6 @@ class AuthServiceTest {
 
     @Test
     public void failLoginWhenPasswordIsNotMatched() {
-
-        //given
-        LoginRequest request = LoginRequest.builder()
-                                           .account("sehoongim")
-                                           .password("not-matched")
-                                           .build();
-
-        User user = User.builder()
-                        .account("sehoongim")
-                        .password("q1w2e3!")
-                        .nickname("shrimp-cracker")
-                        .phone("010-1010-1010")
-                        .crn("123-45-67890")
-                        .build();
 
         //when
         when(userMapper.selectUserByAccount(request.getAccount())).thenReturn(user);

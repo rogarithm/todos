@@ -11,13 +11,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDateTime;
 import java.util.List;
 import kr.rogarithm.todos.domain.todo.domain.Todo;
 import kr.rogarithm.todos.domain.todo.dto.AddTodoRequest;
 import kr.rogarithm.todos.domain.todo.dto.TodoResponse;
 import kr.rogarithm.todos.domain.todo.exception.TodoItemNotFoundException;
 import kr.rogarithm.todos.domain.todo.service.TodoService;
+import org.jeasy.random.EasyRandom;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,57 +42,54 @@ class TodoControllerTest {
     @MockBean
     TodoService todoService;
 
+    EasyRandom generator;
+
+    AddTodoRequest addTodoRequest;
+
+    Long id;
+
+    Todo todo;
+
+    @BeforeEach
+    public void setUp() {
+        generator = new EasyRandom();
+        addTodoRequest = generator.nextObject(AddTodoRequest.class);
+        id = generator.nextObject(Long.class);
+        todo = generator.nextObject(Todo.class);
+    }
+
     @Test
     public void getTodoByIdFailsWhenIdIsInvalid() throws Exception {
 
-        //given
-        Long invalidId = -1L;
-
         //when
-        when(todoService.getTodoById(invalidId)).thenThrow(TodoItemNotFoundException.class);
+        when(todoService.getTodoById(id)).thenThrow(TodoItemNotFoundException.class);
 
         //then
-        this.mockMvc.perform(get("/todo/{todoId}", invalidId))
+        this.mockMvc.perform(get("/todo/{todoId}", id))
                     .andDo(print())
                     .andExpect(status().isNotFound());
 
-        verify(todoService).getTodoById(invalidId);
+        verify(todoService).getTodoById(id);
     }
 
     @Test
     public void getTodoByIdSuccessWhenIdIsValid() throws Exception {
 
-        //given
-        Long validId = 1L;
-
-        Todo todoItem = Todo.builder()
-                            .id(1L)
-                            .name("물 사기")
-                            .description("집 앞 슈퍼에서 물 사오기")
-                            .state("INCOMPLETE")
-                            .createdAt(LocalDateTime.of(2023, 6, 21, 10, 30))
-                            .build();
-
         //when
-        when(todoService.getTodoById(validId)).thenReturn(TodoResponse.of(todoItem));
+        when(todoService.getTodoById(id)).thenReturn(TodoResponse.of(todo));
 
         //then
-        this.mockMvc.perform(get("/todo/{todoId}", validId))
+        this.mockMvc.perform(get("/todo/{todoId}", id))
                     .andDo(print())
                     .andExpect(status().isOk());
 
-        verify(todoService).getTodoById(validId);
+        verify(todoService).getTodoById(id);
     }
 
     @Test
     public void addTodoSuccess() throws Exception {
 
         //given
-        AddTodoRequest addTodoRequest = AddTodoRequest.builder()
-                                                      .name("물 사기")
-                                                      .description("집 앞 슈퍼에서 물 사오기")
-                                                      .build();
-
         String content = objectMapper.writeValueAsString(addTodoRequest);
 
         //when

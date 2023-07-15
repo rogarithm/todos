@@ -2,6 +2,7 @@ package kr.rogarithm.todos.domain.user.dao;
 
 import kr.rogarithm.todos.domain.user.domain.User;
 import org.assertj.core.api.Assertions;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,21 +14,19 @@ class UserMapperTest {
     @Autowired
     UserMapper userMapper;
 
+    EasyRandom generator;
+
+    User user;
+
     @BeforeEach
     public void setUp() {
+        generator = new EasyRandom();
+        user = generator.nextObject(User.class);
         userMapper.deleteAllUsers();
     }
 
     @Test
     public void insertUserSuccess() {
-
-        User user = User.builder()
-                        .account("sehoongim")
-                        .password("q1w2e3!")
-                        .nickname("shrimp-cracker")
-                        .phone("010-1010-1010")
-                        .crn("123-45-67890")
-                        .build();
 
         userMapper.insertUser(user);
     }
@@ -35,7 +34,8 @@ class UserMapperTest {
     @Test
     public void findUserByAccountFail() {
 
-        String invalidAccount = "non-existing";
+        String invalidAccount = user.getAccount().replaceAll("[a-zA-Z0-9]", "X");
+
         User user = userMapper.selectUserByAccount(invalidAccount);
         Assertions.assertThat(user).isNull();
     }
@@ -43,17 +43,9 @@ class UserMapperTest {
     @Test
     public void findUserByAccountSuccess() {
 
-        User user = User.builder()
-                        .account("sehoongim")
-                        .password("q1w2e3!")
-                        .nickname("shrimp-cracker")
-                        .phone("010-1010-1010")
-                        .crn("123-45-67890")
-                        .build();
-
         userMapper.insertUser(user);
+        String validAccount = user.getAccount();
 
-        String validAccount = "sehoongim";
         User retrieved = userMapper.selectUserByAccount(validAccount);
         Assertions.assertThat(retrieved).isNotNull();
     }
@@ -61,7 +53,8 @@ class UserMapperTest {
     @Test
     public void findUserByNicknameFail() {
 
-        String invalidNickname = "non-existing";
+        String invalidNickname = user.getNickname().replaceAll("[a-zA-Z0-9]", "X");
+
         User user = userMapper.selectUserByNickname(invalidNickname);
         Assertions.assertThat(user).isNull();
     }
@@ -69,17 +62,9 @@ class UserMapperTest {
     @Test
     public void findUserByNicknameSuccess() {
 
-        User user = User.builder()
-                        .account("sehoongim")
-                        .password("q1w2e3!")
-                        .nickname("shrimp-cracker")
-                        .phone("010-1010-1010")
-                        .crn("123-45-67890")
-                        .build();
-
         userMapper.insertUser(user);
+        String validNickname = user.getNickname();
 
-        String validNickname = "shrimp-cracker";
         User retrieved = userMapper.selectUserByNickname(validNickname);
         Assertions.assertThat(retrieved).isNotNull();
     }

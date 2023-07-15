@@ -37,9 +37,9 @@ public class TodoEnd2EndTest {
         RestAssured.port = port;
 
         AddTodoRequest request = AddTodoRequest.builder()
-                                                      .name("심부름")
-                                                      .description("물 사러 갔다오기")
-                                                      .build();
+                                               .name("심부름")
+                                               .description("물 사러 갔다오기")
+                                               .build();
 
         ExtractableResponse<Response> response = addTodo(request);
 

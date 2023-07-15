@@ -2,10 +2,15 @@ package kr.rogarithm.todos.domain.todo.integration;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.function.Predicate;
 import javax.validation.ConstraintViolationException;
 import kr.rogarithm.todos.domain.todo.controller.TodoController;
 import kr.rogarithm.todos.domain.todo.dto.AddTodoRequest;
+import org.jeasy.random.EasyRandom;
+import org.jeasy.random.EasyRandomParameters;
+import org.jeasy.random.FieldPredicates;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,12 +24,15 @@ public class TodoIntegrationTest {
     @Test
     public void addTodoFailWhenRequestNotSatisfyConstraint() {
 
-        AddTodoRequest addTodoRequest = AddTodoRequest.builder()
-                                                      .name("")
-                                                      .description("집 앞 슈퍼에서 물 사오기")
-                                                      .build();
+        Predicate<Field> name = FieldPredicates.named("name")
+                                                 .and(FieldPredicates.ofType(String.class))
+                                                 .and(FieldPredicates.inClass(AddTodoRequest.class));
+        EasyRandomParameters invalidName = new EasyRandomParameters().randomize(name, () -> "");
 
-        assertThrows(ConstraintViolationException.class, () -> todoController.addTodo(addTodoRequest));
+        EasyRandom generator = new EasyRandom(invalidName);
+        AddTodoRequest request = generator.nextObject(AddTodoRequest.class);
+
+        assertThrows(ConstraintViolationException.class, () -> todoController.addTodo(request));
     }
 
     @Test

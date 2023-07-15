@@ -8,11 +8,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.rogarithm.todos.domain.user.domain.User;
 import kr.rogarithm.todos.domain.user.dto.JoinUserRequest;
 import kr.rogarithm.todos.domain.user.exception.DuplicateAccountException;
 import kr.rogarithm.todos.domain.user.exception.InvalidCompanyRegistrationNumberException;
 import kr.rogarithm.todos.domain.user.service.UserService;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,25 +38,21 @@ class UserControllerTest {
     @MockBean
     UserService userService;
 
-    User user;
+    EasyRandom generator;
+
+    JoinUserRequest request;
 
     @BeforeEach
-    public void setUp() {
-        this.user = User.builder()
-                        .account("sehoongim")
-                        .password("q1w2e3!")
-                        .nickname("shrimp-cracker")
-                        .phone("010-1010-1010")
-                        .crn("123-45-67890")
-                        .build();
+    public void setUpRequest() {
+
+        generator = new EasyRandom();
+        request = generator.nextObject(JoinUserRequest.class);
     }
 
     @Test
     public void userJoinSuccess() throws Exception {
 
         //given
-        JoinUserRequest request = JoinUserRequest.of(user);
-
         String content = objectMapper.writeValueAsString(request);
 
         //then
@@ -72,15 +68,7 @@ class UserControllerTest {
     public void joinFailWhenAccountIsDuplicate() throws Exception {
 
         //given
-        JoinUserRequest requestWithDuplicateAccount = JoinUserRequest.builder()
-                                                                     .account("duplicated")
-                                                                     .password(user.getPassword())
-                                                                     .nickname(user.getNickname())
-                                                                     .phone(user.getPhone())
-                                                                     .crn(user.getCrn())
-                                                                     .build();
-
-        String content = objectMapper.writeValueAsString(requestWithDuplicateAccount);
+        String content = objectMapper.writeValueAsString(request);
 
         //when
         doThrow(DuplicateAccountException.class)
@@ -96,23 +84,15 @@ class UserControllerTest {
                .andExpect(status().isConflict());
 
         Assertions.assertThrows(DuplicateAccountException.class,
-                () -> userService.registerUser(requestWithDuplicateAccount));
-        verify(userService).registerUser(requestWithDuplicateAccount);
+                () -> userService.registerUser(request));
+        verify(userService).registerUser(request);
     }
 
     @Test
     public void joinFailWhenNicknameIsDuplicate() throws Exception {
 
         //given
-        JoinUserRequest requestWithDuplicateNickname = JoinUserRequest.builder()
-                                                                      .account(user.getAccount())
-                                                                      .password(user.getPassword())
-                                                                      .nickname("duplicated")
-                                                                      .phone(user.getPhone())
-                                                                      .crn(user.getCrn())
-                                                                      .build();
-
-        String content = objectMapper.writeValueAsString(requestWithDuplicateNickname);
+        String content = objectMapper.writeValueAsString(request);
 
         //when
         doThrow(DuplicateAccountException.class)
@@ -128,23 +108,15 @@ class UserControllerTest {
                .andExpect(status().isConflict());
 
         Assertions.assertThrows(DuplicateAccountException.class,
-                () -> userService.registerUser(requestWithDuplicateNickname));
-        verify(userService).registerUser(requestWithDuplicateNickname);
+                () -> userService.registerUser(request));
+        verify(userService).registerUser(request);
     }
 
     @Test
     public void joinFailWhenCompanyRegistrationNumberIsInvalid() throws Exception {
 
         //given
-        JoinUserRequest requestWithInvalidCrn = JoinUserRequest.builder()
-                                                               .account(user.getAccount())
-                                                               .password(user.getPassword())
-                                                               .nickname(user.getNickname())
-                                                               .phone(user.getPhone())
-                                                               .crn("invalidCrn")
-                                                               .build();
-
-        String content = objectMapper.writeValueAsString(requestWithInvalidCrn);
+        String content = objectMapper.writeValueAsString(request);
 
         //when
         doThrow(InvalidCompanyRegistrationNumberException.class)
@@ -160,7 +132,7 @@ class UserControllerTest {
                .andExpect(status().isConflict());
 
         Assertions.assertThrows(InvalidCompanyRegistrationNumberException.class,
-                () -> userService.registerUser(requestWithInvalidCrn));
-        verify(userService).registerUser(requestWithInvalidCrn);
+                () -> userService.registerUser(request));
+        verify(userService).registerUser(request);
     }
 }

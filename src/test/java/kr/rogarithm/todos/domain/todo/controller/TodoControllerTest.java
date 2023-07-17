@@ -1,6 +1,7 @@
 package kr.rogarithm.todos.domain.todo.controller;
 
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -12,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import javax.validation.ConstraintViolationException;
 import kr.rogarithm.todos.domain.todo.domain.Todo;
 import kr.rogarithm.todos.domain.todo.dto.AddTodoRequest;
 import kr.rogarithm.todos.domain.todo.dto.TodoResponse;
@@ -228,6 +230,26 @@ class TodoControllerTest {
                        .accept(MediaType.APPLICATION_JSON))
                .andDo(print())
                .andExpect(status().isOk());
+
+        verify(todoService).updateTodo(updateTodoRequest);
+    }
+
+    @Test
+    public void updateTodoFailWhenInvalidRequest() throws Exception {
+
+        //given
+        String content = objectMapper.writeValueAsString(updateTodoRequest);
+
+        //when
+        doThrow(new ConstraintViolationException("invalid", null)).when(todoService).updateTodo(updateTodoRequest);
+
+        //then
+        mockMvc.perform(put("/todo")
+                       .content(content)
+                       .contentType(MediaType.APPLICATION_JSON)
+                       .accept(MediaType.APPLICATION_JSON))
+               .andDo(print())
+               .andExpect(status().isBadRequest());
 
         verify(todoService).updateTodo(updateTodoRequest);
     }

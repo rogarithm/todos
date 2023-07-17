@@ -23,6 +23,11 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<Map<String, String>> constraintViolationException(ConstraintViolationException e) {
 
         Map<String, String> errors = new HashMap<>();
+
+        if (e.getConstraintViolations() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
         for (ConstraintViolation<?> violation : e.getConstraintViolations()) {
             errors.put(violation.getRootBeanClass().getName(), violation.getMessage());
          }

@@ -1,6 +1,7 @@
 package kr.rogarithm.todos.domain.todo.controller;
 
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -20,6 +21,7 @@ import kr.rogarithm.todos.domain.todo.exception.TodoItemNotFoundException;
 import kr.rogarithm.todos.domain.todo.service.TodoService;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -213,6 +215,7 @@ class TodoControllerTest {
     }
 
     @Test
+    @DisplayName("할 일 업데이트 성공")
     public void updateTodoSuccessWhenValidRequest() throws Exception {
 
         //given
@@ -228,6 +231,27 @@ class TodoControllerTest {
                        .accept(MediaType.APPLICATION_JSON))
                .andDo(print())
                .andExpect(status().isOk());
+
+        verify(todoService).updateTodo(updateTodoRequest);
+    }
+
+    @Test
+    @DisplayName("전에 등록했던 할 일이 아니라면 업데이트에 실패")
+    public void updateTodoFailWhenTodoNotAddedBefore() throws Exception {
+
+        //given
+        String content = objectMapper.writeValueAsString(updateTodoRequest);
+
+        //when
+        doThrow(TodoItemNotFoundException.class).when(todoService).updateTodo(updateTodoRequest);
+
+        //then
+        mockMvc.perform(put("/todo")
+                       .content(content)
+                       .contentType(MediaType.APPLICATION_JSON)
+                       .accept(MediaType.APPLICATION_JSON))
+               .andDo(print())
+               .andExpect(status().isNotFound());
 
         verify(todoService).updateTodo(updateTodoRequest);
     }

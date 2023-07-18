@@ -4,6 +4,7 @@ import java.util.Objects;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import kr.rogarithm.todos.domain.todo.domain.Todo;
 import lombok.Getter;
 
 @Getter
@@ -16,6 +17,16 @@ public class UpdateTodoRequest {
     private String description;
     @Pattern(regexp = "ALL|INCOMPLETE|COMPLETE")
     private String state;
+
+    public Todo toTodo() {
+
+        return Todo.builder()
+                   .id(this.id)
+                   .name(this.name)
+                   .description(this.description)
+                   .state(this.state)
+                   .build();
+    }
 
     @Override
     public boolean equals(Object o) {

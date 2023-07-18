@@ -50,5 +50,14 @@ public class TodoService {
     }
 
     public void updateTodo(@Valid UpdateTodoRequest updateTodoRequest) {
+
+        Long todoId = updateTodoRequest.getId();
+        Todo todo = todoMapper.selectTodoById(todoId);
+
+        if (todo == null) {
+            throw new TodoItemNotFoundException("입력한 아이디 " + todoId + "로 등록된 할 일 항목이 없어 수정이 불가합니다");
+        }
+
+        todoMapper.updateTodo(updateTodoRequest.toTodo());
     }
 }

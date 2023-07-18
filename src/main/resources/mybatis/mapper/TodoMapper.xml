@@ -32,10 +32,16 @@
     (#{name}, #{description}, #{state})
   </insert>
 
-  <delete id="deleteTodoByNameAndDescription">
+  <insert id="updateTodo" parameterType="kr.rogarithm.todos.domain.todo.domain.Todo">
+    UPDATE todo
+    SET name = #{name},
+    description = #{description},
+    state = #{state}
+    WHERE id = #{id}
+  </insert>
+
+  <delete id="deleteAllTodos">
     DELETE FROM todo
-    WHERE name = #{name}
-    AND description = #{description}
   </delete>
 
 </mapper>

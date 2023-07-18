@@ -1,9 +1,19 @@
 package kr.rogarithm.todos.domain.todo.dao;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Random;
+import java.util.function.Predicate;
 import kr.rogarithm.todos.domain.todo.domain.Todo;
-import kr.rogarithm.todos.domain.todo.dto.AddTodoRequest;
-import org.assertj.core.api.Assertions;
+import org.jeasy.random.EasyRandom;
+import org.jeasy.random.EasyRandomParameters;
+import org.jeasy.random.FieldPredicates;
+import org.jeasy.random.randomizers.range.LongRangeRandomizer;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,60 +24,125 @@ class TodoMapperTest {
     @Autowired
     TodoMapper todoMapper;
 
+    EasyRandom generator;
+
+    Long size;
+
+    List<Todo> todos;
+
+    @BeforeEach
+    public void setUp() {
+
+        Predicate<Field> todoId = FieldPredicates.named("id")
+                                                 .and(FieldPredicates.ofType(Long.class))
+                                                 .and(FieldPredicates.inClass(Todo.class));
+        Predicate<Field> todoState = FieldPredicates.named("state")
+                                                    .and(FieldPredicates.ofType(String.class))
+                                                    .and(FieldPredicates.inClass(Todo.class));
+        EasyRandomParameters todoParameters = new EasyRandomParameters()
+                .randomize(todoId, new LongRangeRandomizer(1L, 100L))
+                .randomize(todoState, () -> List.of("INCOMPLETE", "COMPLETE").get(new Random().nextInt(1)));
+
+        generator = new EasyRandom(todoParameters);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        todoMapper.deleteAllTodos();
+    }
+
     @Test
     public void selectTodoFailsWhenIdIsInvalid() {
 
         Long invalidId = -1L;
         Todo todo = todoMapper.selectTodoById(invalidId);
-        Assertions.assertThat(todo).isNull();
+        assertThat(todo).isNull();
     }
 
     @Test
     public void selectTodoSuccessWhenIdIsValid() {
 
-        Long validId = 1L;
-        Todo todo = todoMapper.selectTodoById(validId);
-        Assertions.assertThat(todo.getId()).isEqualTo(validId);
+        Todo todo = generator.nextObject(Todo.class);
+        todoMapper.insertTodo(todo);
+
+        Todo selected = todoMapper.selectTodoById(todo.getId());
+        assertThat(selected.getId()).isEqualTo(todo.getId());
     }
 
     @Test
     public void insertTodoSuccessWhenTodoItemIsValid() {
 
-        Todo todo = AddTodoRequest.builder()
-                                  .name("물 사기")
-                                  .description("집 앞 슈퍼에서 물 사오기")
-                                  .build()
-                                  .toTodo();
+        Todo todo = generator.nextObject(Todo.class);
 
         int affected = todoMapper.insertTodo(todo);
-        Assertions.assertThat(affected).isEqualTo(1);
-        todoMapper.deleteTodoByNameAndDescription(todo.getName(), todo.getDescription());
+        assertThat(affected).isEqualTo(1);
     }
 
     @Test
     public void selectAllTodos() {
 
-        Long size = 3L;
+        int size = 0;
+        for (int i=0; i<10; i++) {
+            Todo todo = generator.nextObject(Todo.class);
+            todoMapper.insertTodo(todo);
+            size++;
+        }
+
         String state = "ALL";
-        List<Todo> todos = todoMapper.selectTodos(state, size);
-        Assertions.assertThat(todos.size()).isEqualTo(3);
+        List<Todo> todos = todoMapper.selectTodos(state, (long) size);
+        assertThat(todos.size()).isEqualTo(size);
     }
 
     @Test
     public void selectCompleteTodos() {
 
-        Long size = 2L;
+        int size = 0;
         String state = "COMPLETE";
-        List<Todo> todos = todoMapper.selectTodos(state, size);
-        Assertions.assertThat(todos.size()).isEqualTo(1);
+
+        for (int i=0; i<10; i++) {
+            Todo todo = generator.nextObject(Todo.class);
+            todoMapper.insertTodo(todo);
+            if (todo.getState().equals(state)) size++;
+        }
+
+        List<Todo> todos = todoMapper.selectTodos(state, (long) size);
+        assertThat(todos.size()).isEqualTo(size);
     }
 
     @Test
     public void selectIncompleteTodos() {
 
-        Long size = 3L;
+        int size = 0;
         String state = "INCOMPLETE";
-        List<Todo> todos = todoMapper.selectTodos(state, size);
-        Assertions.assertThat(todos.size()).isEqualTo(2);
+
+        for (int i=0; i<10; i++) {
+            Todo todo = generator.nextObject(Todo.class);
+            todoMapper.insertTodo(todo);
+            if (todo.getState().equals(state)) size++;
+        }
+
+        List<Todo> todos = todoMapper.selectTodos(state, (long) size);
+        assertThat(todos.size()).isEqualTo(size);
+    }
+
+    @Test
+    @DisplayName("할 일 업데이트 성공")
+    public void updateTodoSuccess() {
+
+        Todo todo = generator.nextObject(Todo.class);
+        todoMapper.insertTodo(todo);
+
+        Todo updateInfo = generator.nextObject(Todo.class);
+        Todo todo2 = Todo.builder()
+                         .id(todo.getId())
+                         .name(updateInfo.getName())
+                         .description(updateInfo.getDescription())
+                         .state(updateInfo.getState())
+                         .build();
+
+        int affected = todoMapper.updateTodo(todo2);
+
+        assertThat(todo.getId()).isEqualTo(todo2.getId());
+        assertThat(affected).isEqualTo(1);
     }
 }

@@ -15,5 +15,5 @@ public interface TodoMapper {
 
     int updateTodo(Todo todo);
 
-    void deleteTodoByNameAndDescription(String name, String description);
+    void deleteAllTodos();
 }

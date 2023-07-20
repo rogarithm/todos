@@ -26,10 +26,6 @@ class TodoMapperTest {
 
     EasyRandom generator;
 
-    Long size;
-
-    List<Todo> todos;
-
     @BeforeEach
     public void setUp() {
 

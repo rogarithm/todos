@@ -1,15 +1,24 @@
 package kr.rogarithm.todos.domain.todo.end2end;
 
+import static kr.rogarithm.todos.domain.todo.fixture.UpdateTodoParam.ID;
+import static kr.rogarithm.todos.domain.todo.fixture.UpdateTodoParam.IS_VALID_STATE;
+import static kr.rogarithm.todos.domain.todo.fixture.UpdateTodoParam.STATE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import kr.rogarithm.todos.domain.todo.dto.AddTodoRequest;
+import kr.rogarithm.todos.domain.todo.dto.UpdateTodoRequest;
+import org.jeasy.random.EasyRandom;
+import org.jeasy.random.EasyRandomParameters;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.jdbc.Sql;
 
+@Sql({"/schema.sql", "/data.sql"})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class TodoEnd2EndTest {
 
@@ -133,4 +142,36 @@ public class TodoEnd2EndTest {
                 .log().all()
                 .extract();
     }
+
+    @DisplayName("할 일 수정 요청 성공")
+    @Test
+    public void updateTodoSuccess() {
+
+        RestAssured.port = port;
+
+        EasyRandomParameters updateTodoParam = new EasyRandomParameters()
+                .randomize(ID, () -> 1L)
+                .randomize(STATE, IS_VALID_STATE);
+        EasyRandom generator = new EasyRandom(updateTodoParam);
+
+        UpdateTodoRequest request = generator.nextObject(UpdateTodoRequest.class);
+
+        ExtractableResponse<Response> response = updateTodo(request);
+
+        assertThat(response.statusCode()).isEqualTo(200);
+    }
+
+    public static ExtractableResponse<Response> updateTodo(UpdateTodoRequest updateTodoRequest) {
+
+        return RestAssured
+                .given().log().all()
+                .contentType("application/json")
+                .body(updateTodoRequest)
+                .when()
+                .put("/todo")
+                .then()
+                .log().all()
+                .extract();
+    }
+
 }

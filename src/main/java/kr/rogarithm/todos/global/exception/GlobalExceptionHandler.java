@@ -31,29 +31,29 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(TodoItemNotFoundException.class)
-    protected ResponseEntity<Void> todoItemNotFoundException(TodoItemNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    protected ResponseEntity<String> todoItemNotFoundException(TodoItemNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
     @ExceptionHandler(DuplicateAccountException.class)
-    protected ResponseEntity<Void> duplicateAccountException(DuplicateAccountException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    protected ResponseEntity<String> duplicateAccountException(DuplicateAccountException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 
     @ExceptionHandler(DuplicateNicknameException.class)
-    protected ResponseEntity<Void> duplicateNicknameException(DuplicateNicknameException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    protected ResponseEntity<String> duplicateNicknameException(DuplicateNicknameException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 
     @ExceptionHandler(InvalidCompanyRegistrationNumberException.class)
-    protected ResponseEntity<Void> invalidCompanyRegistrationNumberException(
+    protected ResponseEntity<String> invalidCompanyRegistrationNumberException(
             InvalidCompanyRegistrationNumberException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 
     @ExceptionHandler(AuthenticationFailedException.class)
-    protected ResponseEntity<Void> authenticationFailedException(AuthenticationFailedException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    protected ResponseEntity<String> authenticationFailedException(AuthenticationFailedException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
     }
 
     @ExceptionHandler(VerificationException.class)

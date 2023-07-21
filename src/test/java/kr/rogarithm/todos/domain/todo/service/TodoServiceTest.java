@@ -15,12 +15,15 @@ import kr.rogarithm.todos.domain.todo.dao.TodoMapper;
 import kr.rogarithm.todos.domain.todo.domain.Todo;
 import kr.rogarithm.todos.domain.todo.dto.AddTodoRequest;
 import kr.rogarithm.todos.domain.todo.dto.TodoResponse;
+import kr.rogarithm.todos.domain.todo.dto.UpdateTodoRequest;
 import kr.rogarithm.todos.domain.todo.exception.TodoItemNotFoundException;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 import org.jeasy.random.FieldPredicates;
 import org.jeasy.random.randomizers.number.LongRandomizer;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -39,6 +42,8 @@ class TodoServiceTest {
     EasyRandom generator;
 
     EasyRandomParameters todoParameters;
+
+    UpdateTodoRequest updateTodoRequest;
 
     Long id;
 
@@ -59,6 +64,7 @@ class TodoServiceTest {
         generator = new EasyRandom(todoParameters);
         id = generator.nextObject(Long.class);
         size = generator.nextLong(1, 10);
+        updateTodoRequest = generator.nextObject(UpdateTodoRequest.class);
     }
 
     @Test
@@ -175,5 +181,31 @@ class TodoServiceTest {
         }
         todoService.getTodos(state, size);
         verify(todoMapper).selectTodos(state, size);
+    }
+
+    @Test
+    @DisplayName("할 일 업데이트 성공")
+    public void updateTodoSuccess() {
+
+        //when
+        when(todoMapper.selectTodoById(any(Long.class))).thenReturn(generator.nextObject(Todo.class));
+        when(todoMapper.updateTodo(any(Todo.class))).thenReturn(1);
+
+        //then
+        todoService.updateTodo(updateTodoRequest);
+        verify(todoMapper).selectTodoById(any(Long.class));
+        verify(todoMapper).updateTodo(any(Todo.class));
+    }
+
+    @Test
+    @DisplayName("전에 등록했던 할 일이 아니라면 업데이트에 실패")
+    public void updateTodoFailWhenTodoNotAddedBefore() {
+
+        //when
+        when(todoMapper.selectTodoById(any(Long.class))).thenReturn(null);
+
+        //then
+        Assertions.assertThrows(TodoItemNotFoundException.class, () -> todoService.updateTodo(updateTodoRequest));
+        verify(todoMapper).selectTodoById(any(Long.class));
     }
 }

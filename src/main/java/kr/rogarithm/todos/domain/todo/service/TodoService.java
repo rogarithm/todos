@@ -9,6 +9,7 @@ import kr.rogarithm.todos.domain.todo.dao.TodoMapper;
 import kr.rogarithm.todos.domain.todo.domain.Todo;
 import kr.rogarithm.todos.domain.todo.dto.AddTodoRequest;
 import kr.rogarithm.todos.domain.todo.dto.TodoResponse;
+import kr.rogarithm.todos.domain.todo.dto.UpdateTodoRequest;
 import kr.rogarithm.todos.domain.todo.exception.TodoItemNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -46,5 +47,17 @@ public class TodoService {
     public void saveTodo(@Valid AddTodoRequest addTodoRequest) {
 
         todoMapper.insertTodo(addTodoRequest.toTodo());
+    }
+
+    public void updateTodo(@Valid UpdateTodoRequest updateTodoRequest) {
+
+        Long todoId = updateTodoRequest.getId();
+        Todo todo = todoMapper.selectTodoById(todoId);
+
+        if (todo == null) {
+            throw new TodoItemNotFoundException("입력한 아이디 " + todoId + "로 등록된 할 일 항목이 없어 수정이 불가합니다");
+        }
+
+        todoMapper.updateTodo(updateTodoRequest.toTodo());
     }
 }

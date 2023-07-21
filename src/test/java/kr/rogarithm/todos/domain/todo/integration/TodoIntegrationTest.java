@@ -66,8 +66,8 @@ public class TodoIntegrationTest {
     public void addTodoFailWhenRequestNotSatisfyConstraint() {
 
         Predicate<Field> name = FieldPredicates.named("name")
-                                                 .and(FieldPredicates.ofType(String.class))
-                                                 .and(FieldPredicates.inClass(AddTodoRequest.class));
+                                               .and(FieldPredicates.ofType(String.class))
+                                               .and(FieldPredicates.inClass(AddTodoRequest.class));
         EasyRandomParameters invalidName = new EasyRandomParameters().randomize(name, () -> "");
 
         EasyRandom generator = new EasyRandom(invalidName);
@@ -117,7 +117,8 @@ public class TodoIntegrationTest {
                 .randomize(STATE, IS_VALID_STATE);
 
         EasyRandom generator = new EasyRandom(todoParameters);
-        assertThrows(ConstraintViolationException.class, () -> todoController.updateTodo(generator.nextObject(UpdateTodoRequest.class)));
+        assertThrows(ConstraintViolationException.class,
+                () -> todoController.updateTodo(generator.nextObject(UpdateTodoRequest.class)));
     }
 
     @DisplayName("name 필드가 유효하지 않은 할 일 수정 요청 시 실패")
@@ -130,7 +131,8 @@ public class TodoIntegrationTest {
                 .randomize(STATE, IS_VALID_STATE);
 
         EasyRandom generator = new EasyRandom(todoParameters);
-        assertThrows(ConstraintViolationException.class, () -> todoController.updateTodo(generator.nextObject(UpdateTodoRequest.class)));
+        assertThrows(ConstraintViolationException.class,
+                () -> todoController.updateTodo(generator.nextObject(UpdateTodoRequest.class)));
     }
 
     @DisplayName("state 필드가 유효하지 않은 할 일 수정 요청 시 실패")
@@ -142,6 +144,7 @@ public class TodoIntegrationTest {
                 .randomize(STATE, IS_INVALID_STATE);
 
         EasyRandom generator = new EasyRandom(todoParameters);
-        assertThrows(ConstraintViolationException.class, () -> todoController.updateTodo(generator.nextObject(UpdateTodoRequest.class)));
+        assertThrows(ConstraintViolationException.class,
+                () -> todoController.updateTodo(generator.nextObject(UpdateTodoRequest.class)));
     }
 }

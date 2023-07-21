@@ -31,9 +31,9 @@ public class TodoEnd2EndTest {
         RestAssured.port = port;
 
         AddTodoRequest requestViolatesConstraint = AddTodoRequest.builder()
-                                                      .name("")
-                                                      .description("물 사러 갔다오기")
-                                                      .build();
+                                                                 .name("")
+                                                                 .description("물 사러 갔다오기")
+                                                                 .build();
 
         ExtractableResponse<Response> response = addTodo(requestViolatesConstraint);
 

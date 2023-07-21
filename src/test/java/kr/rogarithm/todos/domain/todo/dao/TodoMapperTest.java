@@ -80,7 +80,7 @@ class TodoMapperTest {
     public void selectAllTodos() {
 
         int size = 0;
-        for (int i=0; i<10; i++) {
+        for (int i = 0; i < 10; i++) {
             Todo todo = generator.nextObject(Todo.class);
             todoMapper.insertTodo(todo);
             size++;
@@ -97,10 +97,12 @@ class TodoMapperTest {
         int size = 0;
         String state = "COMPLETE";
 
-        for (int i=0; i<10; i++) {
+        for (int i = 0; i < 10; i++) {
             Todo todo = generator.nextObject(Todo.class);
             todoMapper.insertTodo(todo);
-            if (todo.getState().equals(state)) size++;
+            if (todo.getState().equals(state)) {
+                size++;
+            }
         }
 
         List<Todo> todos = todoMapper.selectTodos(state, (long) size);
@@ -113,10 +115,12 @@ class TodoMapperTest {
         int size = 0;
         String state = "INCOMPLETE";
 
-        for (int i=0; i<10; i++) {
+        for (int i = 0; i < 10; i++) {
             Todo todo = generator.nextObject(Todo.class);
             todoMapper.insertTodo(todo);
-            if (todo.getState().equals(state)) size++;
+            if (todo.getState().equals(state)) {
+                size++;
+            }
         }
 
         List<Todo> todos = todoMapper.selectTodos(state, (long) size);

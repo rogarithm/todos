@@ -15,6 +15,9 @@ public class JwtAuthenticationManager {
 
     private static final String secretKey = "TodosAppSecretLengthIsMoreThan256";
 
+    public JwtAuthenticationManager() {
+    }
+
     public Claims verifyToken(String token) {
         Claims claims = Jwts.parserBuilder()
                           .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))

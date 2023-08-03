@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import kr.rogarithm.todos.domain.auth.dto.LoginRequest;
 import kr.rogarithm.todos.domain.todo.dto.AddTodoRequest;
 import kr.rogarithm.todos.domain.todo.dto.UpdateTodoRequest;
 import org.jeasy.random.EasyRandom;
@@ -35,7 +36,9 @@ public class TodoEnd2EndTest {
                                                                  .description("물 사러 갔다오기")
                                                                  .build();
 
-        ExtractableResponse<Response> response = addTodo(requestViolatesConstraint);
+        ExtractableResponse<Response> loginResponse = loginUser();
+
+        ExtractableResponse<Response> response = addTodo(requestViolatesConstraint, loginResponse.header("Authorization"));
 
         assertThat(response.statusCode()).isEqualTo(400);
     }
@@ -50,15 +53,17 @@ public class TodoEnd2EndTest {
                                                .description("물 사러 갔다오기")
                                                .build();
 
-        ExtractableResponse<Response> response = addTodo(request);
+        ExtractableResponse<Response> loginResponse = loginUser();
+
+        ExtractableResponse<Response> response = addTodo(request, loginResponse.header("Authorization"));
 
         assertThat(response.statusCode()).isEqualTo(200);
     }
 
-    private ExtractableResponse<Response> addTodo(AddTodoRequest addTodoRequest) {
+    private ExtractableResponse<Response> addTodo(AddTodoRequest addTodoRequest, String token) {
 
         return RestAssured
-                .given().log().all()
+                .given().header("Authorization", token).log().all()
                 .contentType("application/json")
                 .body(addTodoRequest)
                 .when()
@@ -76,7 +81,9 @@ public class TodoEnd2EndTest {
         String state = "ALL";
         Long size = 3L;
 
-        ExtractableResponse<Response> response = getTodos(state, size);
+        ExtractableResponse<Response> loginResponse = loginUser();
+
+        ExtractableResponse<Response> response = getTodos(state, size, loginResponse.header("Authorization"));
 
         assertThat(response.statusCode()).isEqualTo(200);
     }
@@ -89,15 +96,17 @@ public class TodoEnd2EndTest {
         String state = "ALL";
         Long size = -1L;
 
-        ExtractableResponse<Response> response = getTodos(state, size);
+        ExtractableResponse<Response> loginResponse = loginUser();
+
+        ExtractableResponse<Response> response = getTodos(state, size, loginResponse.header("Authorization"));
 
         assertThat(response.statusCode()).isEqualTo(400);
     }
 
-    public static ExtractableResponse<Response> getTodos(String state, Long size) {
+    public static ExtractableResponse<Response> getTodos(String state, Long size, String token) {
 
         return RestAssured
-                .given().log().all()
+                .given().header("Authorization", token).log().all()
                 .param("state", state)
                 .param("size", size)
                 .when()
@@ -114,7 +123,9 @@ public class TodoEnd2EndTest {
 
         Long validId = 1L;
 
-        ExtractableResponse<Response> response = getTodoById(validId);
+        ExtractableResponse<Response> loginResponse = loginUser();
+
+        ExtractableResponse<Response> response = getTodoById(validId, loginResponse.header("Authorization"));
 
         assertThat(response.statusCode()).isEqualTo(200);
     }
@@ -126,15 +137,17 @@ public class TodoEnd2EndTest {
 
         Long invalidId = -1L;
 
-        ExtractableResponse<Response> response = getTodoById(invalidId);
+        ExtractableResponse<Response> loginResponse = loginUser();
+
+        ExtractableResponse<Response> response = getTodoById(invalidId, loginResponse.header("Authorization"));
 
         assertThat(response.statusCode()).isEqualTo(404);
     }
 
-    public static ExtractableResponse<Response> getTodoById(Long todoId) {
+    public static ExtractableResponse<Response> getTodoById(Long todoId, String token) {
 
         return RestAssured
-                .given().log().all()
+                .given().header("Authorization", token).log().all()
                 .pathParams("todoId", todoId)
                 .when()
                 .get("/todo/{todoId}")
@@ -156,15 +169,17 @@ public class TodoEnd2EndTest {
 
         UpdateTodoRequest request = generator.nextObject(UpdateTodoRequest.class);
 
-        ExtractableResponse<Response> response = updateTodo(request);
+        ExtractableResponse<Response> loginResponse = loginUser();
+
+        ExtractableResponse<Response> response = updateTodo(request, loginResponse.header("Authorization"));
 
         assertThat(response.statusCode()).isEqualTo(200);
     }
 
-    public static ExtractableResponse<Response> updateTodo(UpdateTodoRequest updateTodoRequest) {
+    public static ExtractableResponse<Response> updateTodo(UpdateTodoRequest updateTodoRequest, String token) {
 
         return RestAssured
-                .given().log().all()
+                .given().header("Authorization", token).log().all()
                 .contentType("application/json")
                 .body(updateTodoRequest)
                 .when()
@@ -174,4 +189,21 @@ public class TodoEnd2EndTest {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> loginUser() {
+
+        LoginRequest loginRequest = LoginRequest.builder()
+            .account("sehoongim")
+            .password("q1w2e3!")
+            .build();
+
+        return RestAssured
+            .given().log().all()
+            .contentType("application/json")
+            .body(loginRequest)
+            .when()
+            .post("auth/login")
+            .then()
+            .log().all()
+            .extract();
+    }
 }

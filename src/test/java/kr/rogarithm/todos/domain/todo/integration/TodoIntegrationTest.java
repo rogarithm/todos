@@ -8,25 +8,18 @@ import static kr.rogarithm.todos.domain.todo.fixture.UpdateTodoParam.IS_VALID_ID
 import static kr.rogarithm.todos.domain.todo.fixture.UpdateTodoParam.IS_VALID_STATE;
 import static kr.rogarithm.todos.domain.todo.fixture.UpdateTodoParam.NAME;
 import static kr.rogarithm.todos.domain.todo.fixture.UpdateTodoParam.STATE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
 import javax.validation.ConstraintViolationException;
-import kr.rogarithm.todos.domain.auth.controller.AuthController;
-import kr.rogarithm.todos.domain.auth.dto.LoginRequest;
 import kr.rogarithm.todos.domain.todo.controller.TodoController;
 import kr.rogarithm.todos.domain.todo.dao.TodoMapper;
 import kr.rogarithm.todos.domain.todo.domain.Todo;
 import kr.rogarithm.todos.domain.todo.dto.AddTodoRequest;
-import kr.rogarithm.todos.domain.todo.dto.TodoResponse;
 import kr.rogarithm.todos.domain.todo.dto.UpdateTodoRequest;
 import kr.rogarithm.todos.domain.todo.service.TodoService;
 import org.jeasy.random.EasyRandom;
@@ -37,15 +30,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.web.servlet.MockMvc;
 
 @Sql({"/schema.sql", "/data.sql"})
-@AutoConfigureMockMvc
 @SpringBootTest
 public class TodoIntegrationTest {
 
@@ -53,18 +41,12 @@ public class TodoIntegrationTest {
     TodoController todoController;
 
     @Autowired
-    AuthController authController;
-
-    @Autowired
     TodoMapper todoMapper;
 
     @Autowired
-    MockMvc mockMvc;
-
-    @MockBean
     TodoService todoService;
 
-    LoginRequest loginRequest;
+    Long todoCount = 0L;
 
     @BeforeEach
     public void setUp() {
@@ -84,12 +66,8 @@ public class TodoIntegrationTest {
         for (int i=0; i<10; i++) {
             Todo todo = generator.nextObject(Todo.class);
             todoMapper.insertTodo(todo);
+            todoCount++;
         }
-
-        authController.loginUser(loginRequest.builder()
-                                             .account("sehoongim")
-                                             .password("q1w2e3!")
-                .build(), new MockHttpServletResponse());
     }
 
     @Test
@@ -128,31 +106,13 @@ public class TodoIntegrationTest {
     }
 
     @Test
-    public void getTodosSuccessWhenParameterSatisfyConstraint() throws Exception {
+    public void getTodosSuccessWhenParameterSatisfyConstraint() {
 
-        Long size = 2L;
+        Long size = todoCount;
         String state = "ALL";
 
-        TodoResponse todo1 = TodoResponse.builder()
-                                         .id(1L)
-                                         .name("커피 원두 구입")
-                                         .description("디벨로핑룸 가서 커피 원두 사기")
-                                         .state("COMPLETE")
-                                         .build();
-        TodoResponse todo2 = TodoResponse.builder()
-                                         .id(2L)
-                                         .name("회덮밥 사오기")
-                                         .description("바다회 사랑 가서 회덮밥 포장해오기")
-                                         .state("INCOMPLETE")
-                                         .build();
-        when(todoService.getTodos(state, size)).thenReturn(List.of(todo1, todo2));
-        mockMvc.perform(get("/todo")
-                       .queryParam("state", state)
-                       .queryParam("size", size.toString()))
-               .andDo(print())
-               .andExpect(status().isOk());
+        assertEquals(todoCount, todoController.getTodos("ALL", todoCount).getBody().size());
 
-        verify(todoService).getTodos(state, size);
     }
 
     @DisplayName("id 필드가 유효하지 않은 할 일 수정 요청 시 실패")

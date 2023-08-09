@@ -100,9 +100,9 @@ class JwtAuthenticationFilterTest {
 
         Long todoId = 1L;
 
-        MockHttpServletRequestBuilder requestNoAuthHeader = MockMvcRequestBuilders.get("/todo/{todoId}", todoId)
-                                                                                  .cookie(new Cookie("RefreshToken",
-                                                                                          "refresh-token"));
+        MockHttpServletRequestBuilder requestNoAuthHeader =
+                MockMvcRequestBuilders.get("/todo/{todoId}", todoId)
+                                      .cookie(new Cookie("RefreshToken", "refresh-token"));
 
         this.mockMvc.perform(requestNoAuthHeader)
                     .andDo(print())
@@ -114,13 +114,14 @@ class JwtAuthenticationFilterTest {
 
         Long todoId = 1L;
 
-        when(jwtAuthenticationManager.verifyToken("access-token")).thenThrow(ExpiredJwtException.class);
+        when(jwtAuthenticationManager.verifyToken("access-token"))
+                .thenThrow(ExpiredJwtException.class);
 
-        MockHttpServletRequestBuilder requestNoAuthHeader = MockMvcRequestBuilders.get("/todo/{todoId}", todoId)
-                                                                                  .header("Authorization",
-                                                                                          "Bearer " + "access-token")
-                                                                                  .cookie(new Cookie("RefreshToken",
-                                                                                          "refresh-token"));
+        MockHttpServletRequestBuilder requestNoAuthHeader =
+                MockMvcRequestBuilders.get("/todo/{todoId}", todoId)
+                                      .header("Authorization",
+                                              "Bearer " + "access-token")
+                                      .cookie(new Cookie("RefreshToken", "refresh-token"));
 
         this.mockMvc.perform(requestNoAuthHeader)
                     .andDo(print())
@@ -132,13 +133,14 @@ class JwtAuthenticationFilterTest {
 
         Long todoId = 1L;
 
-        when(jwtAuthenticationManager.verifyToken("access-token-in-wrong-format")).thenThrow(JwtException.class);
+        when(jwtAuthenticationManager.verifyToken("access-token-in-wrong-format"))
+                .thenThrow(JwtException.class);
 
-        MockHttpServletRequestBuilder requestNoAuthHeader = MockMvcRequestBuilders.get("/todo/{todoId}", todoId)
-                                                                                  .header("Authorization", "Bearer "
-                                                                                          + "access-token-in-wrong-format")
-                                                                                  .cookie(new Cookie("RefreshToken",
-                                                                                          "refresh-token"));
+        MockHttpServletRequestBuilder requestNoAuthHeader =
+                MockMvcRequestBuilders.get("/todo/{todoId}", todoId)
+                                      .header("Authorization",
+                                              "Bearer " + "access-token-in-wrong-format")
+                                      .cookie(new Cookie("RefreshToken", "refresh-token"));
 
         this.mockMvc.perform(requestNoAuthHeader)
                     .andDo(print())
@@ -156,18 +158,16 @@ class JwtAuthenticationFilterTest {
 
         String content = objectMapper.writeValueAsString(validRequest);
 
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/auth/login")
-                                                                      .header("Authorization",
-                                                                              "Bearer " + "access-token")
-                                                                      .cookie(new Cookie("RefreshToken",
-                                                                              "refresh-token"));
+        MockHttpServletRequestBuilder request =
+                MockMvcRequestBuilders.post("/auth/login")
+                                      .header("Authorization", "Bearer " + "access-token")
+                                      .cookie(new Cookie("RefreshToken", "refresh-token"));
 
         when(authService.loginUser(any(LoginRequest.class))).thenReturn(tokens);
 
-        this.mockMvc.perform(request
-                            .content(content)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(request.content(content)
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .accept(MediaType.APPLICATION_JSON))
                     .andDo(print())
                     .andExpect(status().isOk());
     }

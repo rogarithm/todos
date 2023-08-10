@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import kr.rogarithm.todos.domain.verify.dto.VerifyResponse;
 import kr.rogarithm.todos.domain.verify.exception.VerificationException;
 import kr.rogarithm.todos.domain.verify.service.VerifyService;
+import kr.rogarithm.todos.global.auth.JwtAuthenticationFilter;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,10 +19,18 @@ import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(controllers = VerifyController.class)
+@WebMvcTest(
+        controllers = VerifyController.class,
+        excludeFilters =
+        @ComponentScan.Filter(
+                type = FilterType.ASSIGNABLE_TYPE,
+                classes = JwtAuthenticationFilter.class)
+)
 class VerifyControllerTest {
 
     @Autowired

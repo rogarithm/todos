@@ -19,6 +19,7 @@ import kr.rogarithm.todos.domain.todo.dto.TodoResponse;
 import kr.rogarithm.todos.domain.todo.dto.UpdateTodoRequest;
 import kr.rogarithm.todos.domain.todo.exception.TodoItemNotFoundException;
 import kr.rogarithm.todos.domain.todo.service.TodoService;
+import kr.rogarithm.todos.global.auth.JwtAuthenticationFilter;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,10 +28,17 @@ import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(controllers = TodoController.class)
+@WebMvcTest(
+    controllers = TodoController.class,
+    excludeFilters = @ComponentScan.Filter(
+        type = FilterType.ASSIGNABLE_TYPE,
+        classes = JwtAuthenticationFilter.class)
+)
 class TodoControllerTest {
 
     @Autowired
@@ -72,8 +80,8 @@ class TodoControllerTest {
 
         //then
         this.mockMvc.perform(get("/todo/{todoId}", id))
-                    .andDo(print())
-                    .andExpect(status().isNotFound());
+            .andDo(print())
+            .andExpect(status().isNotFound());
 
         verify(todoService).getTodoById(id);
     }
@@ -86,8 +94,8 @@ class TodoControllerTest {
 
         //then
         this.mockMvc.perform(get("/todo/{todoId}", id))
-                    .andDo(print())
-                    .andExpect(status().isOk());
+            .andDo(print())
+            .andExpect(status().isOk());
 
         verify(todoService).getTodoById(id);
     }
@@ -103,11 +111,11 @@ class TodoControllerTest {
 
         //then
         mockMvc.perform(post("/todo")
-                       .content(content)
-                       .contentType(MediaType.APPLICATION_JSON)
-                       .accept(MediaType.APPLICATION_JSON))
-               .andDo(print())
-               .andExpect(status().isOk());
+                .content(content)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+            .andDo(print())
+            .andExpect(status().isOk());
 
         verify(todoService).saveTodo(addTodoRequest);
     }
@@ -119,31 +127,31 @@ class TodoControllerTest {
         Long size = 2L;
         String state = "ALL";
         TodoResponse todo1 = TodoResponse.builder()
-                                         .id(1L)
-                                         .name("커피 원두 구입")
-                                         .description("디벨로핑룸 가서 커피 원두 사기")
-                                         .state("COMPLETE")
-                                         .build();
+            .id(1L)
+            .name("커피 원두 구입")
+            .description("디벨로핑룸 가서 커피 원두 사기")
+            .state("COMPLETE")
+            .build();
         TodoResponse todo2 = TodoResponse.builder()
-                                         .id(2L)
-                                         .name("회덮밥 사오기")
-                                         .description("바다회 사랑 가서 회덮밥 포장해오기")
-                                         .state("INCOMPLETE")
-                                         .build();
+            .id(2L)
+            .name("회덮밥 사오기")
+            .description("바다회 사랑 가서 회덮밥 포장해오기")
+            .state("INCOMPLETE")
+            .build();
 
         //when
         when(todoService.getTodos(state, size)).thenReturn(List.of(todo1, todo2));
 
         //then
         mockMvc.perform(get("/todo")
-                       .queryParam("state", state)
-                       .queryParam("size", size.toString()))
-               .andDo(print())
-               .andExpect(jsonPath("$[0].id").value("1"))
-               .andExpect(jsonPath("$[0].name").value("커피 원두 구입"))
-               .andExpect(jsonPath("$[1].id").value("2"))
-               .andExpect(jsonPath("$[1].name").value("회덮밥 사오기"))
-               .andExpect(status().isOk());
+                .queryParam("state", state)
+                .queryParam("size", size.toString()))
+            .andDo(print())
+            .andExpect(jsonPath("$[0].id").value("1"))
+            .andExpect(jsonPath("$[0].name").value("커피 원두 구입"))
+            .andExpect(jsonPath("$[1].id").value("2"))
+            .andExpect(jsonPath("$[1].name").value("회덮밥 사오기"))
+            .andExpect(status().isOk());
 
         verify(todoService).getTodos(state, size);
     }
@@ -155,28 +163,28 @@ class TodoControllerTest {
         Long size = 1L;
         String state = "COMPLETE";
         TodoResponse todo1 = TodoResponse.builder()
-                                         .id(2L)
-                                         .name("회덮밥 사오기")
-                                         .description("바다회 사랑 가서 회덮밥 포장해오기")
-                                         .state("COMPLETE")
-                                         .build();
+            .id(2L)
+            .name("회덮밥 사오기")
+            .description("바다회 사랑 가서 회덮밥 포장해오기")
+            .state("COMPLETE")
+            .build();
         TodoResponse todo2 = TodoResponse.builder()
-                                         .id(2L)
-                                         .name("회덮밥 사오기")
-                                         .description("바다회 사랑 가서 회덮밥 포장해오기")
-                                         .state("INCOMPLETE")
-                                         .build();
+            .id(2L)
+            .name("회덮밥 사오기")
+            .description("바다회 사랑 가서 회덮밥 포장해오기")
+            .state("INCOMPLETE")
+            .build();
 
         //when
         when(todoService.getTodos(state, size)).thenReturn(List.of(todo1));
 
         //then
         mockMvc.perform(get("/todo")
-                       .queryParam("state", state)
-                       .queryParam("size", size.toString()))
-               .andDo(print())
-               .andExpect(jsonPath("$[0].state").value("COMPLETE"))
-               .andExpect(status().isOk());
+                .queryParam("state", state)
+                .queryParam("size", size.toString()))
+            .andDo(print())
+            .andExpect(jsonPath("$[0].state").value("COMPLETE"))
+            .andExpect(status().isOk());
 
         verify(todoService).getTodos(state, size);
     }
@@ -188,28 +196,28 @@ class TodoControllerTest {
         Long size = 1L;
         String state = "INCOMPLETE";
         TodoResponse todo1 = TodoResponse.builder()
-                                         .id(2L)
-                                         .name("회덮밥 사오기")
-                                         .description("바다회 사랑 가서 회덮밥 포장해오기")
-                                         .state("COMPLETE")
-                                         .build();
+            .id(2L)
+            .name("회덮밥 사오기")
+            .description("바다회 사랑 가서 회덮밥 포장해오기")
+            .state("COMPLETE")
+            .build();
         TodoResponse todo2 = TodoResponse.builder()
-                                         .id(2L)
-                                         .name("회덮밥 사오기")
-                                         .description("바다회 사랑 가서 회덮밥 포장해오기")
-                                         .state("INCOMPLETE")
-                                         .build();
+            .id(2L)
+            .name("회덮밥 사오기")
+            .description("바다회 사랑 가서 회덮밥 포장해오기")
+            .state("INCOMPLETE")
+            .build();
 
         //when
         when(todoService.getTodos(state, size)).thenReturn(List.of(todo2));
 
         //then
         mockMvc.perform(get("/todo")
-                       .queryParam("state", state)
-                       .queryParam("size", size.toString()))
-               .andDo(print())
-               .andExpect(jsonPath("$[0].state").value("INCOMPLETE"))
-               .andExpect(status().isOk());
+                .queryParam("state", state)
+                .queryParam("size", size.toString()))
+            .andDo(print())
+            .andExpect(jsonPath("$[0].state").value("INCOMPLETE"))
+            .andExpect(status().isOk());
 
         verify(todoService).getTodos(state, size);
     }
@@ -226,11 +234,11 @@ class TodoControllerTest {
 
         //then
         mockMvc.perform(put("/todo")
-                       .content(content)
-                       .contentType(MediaType.APPLICATION_JSON)
-                       .accept(MediaType.APPLICATION_JSON))
-               .andDo(print())
-               .andExpect(status().isOk());
+                .content(content)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+            .andDo(print())
+            .andExpect(status().isOk());
 
         verify(todoService).updateTodo(updateTodoRequest);
     }
@@ -247,11 +255,11 @@ class TodoControllerTest {
 
         //then
         mockMvc.perform(put("/todo")
-                       .content(content)
-                       .contentType(MediaType.APPLICATION_JSON)
-                       .accept(MediaType.APPLICATION_JSON))
-               .andDo(print())
-               .andExpect(status().isNotFound());
+                .content(content)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+            .andDo(print())
+            .andExpect(status().isNotFound());
 
         verify(todoService).updateTodo(updateTodoRequest);
     }
